@@ -28,4 +28,10 @@ export const env = Object.freeze({
 
   allowedOrigins: toList(process.env.ALLOWED_ORIGINS, ['http://localhost:5173']),
   adminApiKey: process.env.ADMIN_API_KEY?.trim() ?? '',
+
+  // Sprint 2 — fotos de evidencia (Cloudinary)
+  cloudinaryUrl: process.env.CLOUDINARY_URL?.trim() ?? '',
+  cloudinaryFolder: process.env.CLOUDINARY_FOLDER?.trim() || 'civicguard/incidents',
+  /** Límite de subida por foto (5 MB por defecto). */
+  maxPhotoBytes: Number(process.env.MAX_PHOTO_BYTES ?? 5 * 1024 * 1024),
 });
