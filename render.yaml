@@ -1,0 +1,30 @@
+# ── API REST de CivicGuard (Render) ─────────────────────────────────────────
+# Blueprint opcional: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: civicguard-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: headless-backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # se captura en el panel de Render (Neon)
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
