@@ -1,0 +1,40 @@
+# macOS
+.DS_Store
+
+# Dependencias
+node_modules/
+
+# Build y salida
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# Python (skill ui-ux-pro-max)
+__pycache__/
+*.pyc
+
+# Herramientas de agente y material de IA (no se publica)
+skills/
+opencode.json
+opencode.jsonc
+.opencode/
+.agents/
+.claude/
+.cursor/
+.windsurf/
+.playwright-mcp/
+prompts/
