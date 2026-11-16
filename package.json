@@ -1,0 +1,17 @@
+{
+  "name": "civicguard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CivicGuard — PWA para reportar incidencias de infraestructura urbana",
+  "scripts": {
+    "install:all": "npm --prefix pwa-frontend install && npm --prefix headless-backend install",
+    "dev": "npm --prefix pwa-frontend run dev",
+    "dev:api": "npm --prefix headless-backend run dev",
+    "build": "npm --prefix pwa-frontend run build",
+    "preview": "npm --prefix pwa-frontend run preview",
+    "lint": "npm --prefix pwa-frontend run lint && npm --prefix headless-backend run lint",
+    "check:storage": "node scripts/check-storage.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "verify": "npm run lint && npm run check:storage && npm run build"
+  }
+}
