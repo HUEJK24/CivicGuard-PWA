@@ -1,5 +1,17 @@
 import incidentRepository from '../repositories/incidentRepository.js';
+import photoService from './photoService.js';
 import { HttpError } from '../utils/httpError.js';
+
+/**
+ * Sube la foto de evidencia y devuelve su URL pública.
+ * @param {{ buffer?: Buffer } | undefined} photo
+ * @returns {Promise<string | null>}
+ */
+async function uploadEvidence(photo) {
+  if (!photo?.buffer) return null;
+  const uploaded = await photoService.upload(photo.buffer);
+  return uploaded?.url ?? null;
+}
 
 /** Reglas de negocio de incidencias. No conoce Express ni SQL. */
 export const incidentService = {
@@ -19,10 +31,20 @@ export const incidentService = {
 
   /**
    * Idempotente: reintentar el mismo `clientReportId` no crea duplicados.
+   *
+   * La foto se sube a Cloudinary **antes** del INSERT. Si Cloudinary no está
+   * configurado la incidencia se guarda igual con `photo_url = null`.
+   *
    * @param {object} payload
+   * @param {{ photo?: { buffer?: Buffer } }} [options]
    */
-  async create(payload) {
-    const { created, incident } = await incidentRepository.createIdempotent(payload);
+  async create(payload, { photo } = {}) {
+    const photoUrl = await uploadEvidence(photo);
+
+    const { created, incident } = await incidentRepository.createIdempotent({
+      ...payload,
+      photoUrl,
+    });
     if (!incident) {
       throw new HttpError(500, 'INCIDENT_NOT_PERSISTED', 'No se pudo guardar la incidencia.');
     }

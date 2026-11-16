@@ -46,7 +46,8 @@ Cabeceras relevantes: `Content-Type: application/json`,
 
 - **Autenticación:** ninguna (Sprint 3 añade el panel de administración).
 - **Sprint:** 1 (lectura) · **Estado:** implementado.
-- **Query:** `status` (`pending` | `synced` | `resolved`, opcional), `limit` (por defecto 50).
+- **Query:** `status` (`pending` | `synced` | `resolved`, opcional), `limit` (1…100, por defecto 50).
+- Validación con `validate(rules, 'query')`: un `status` o `limit` inválido responde `400 VALIDATION_ERROR`.
 
 ```jsonc
 // 200
@@ -57,18 +58,19 @@ Cabeceras relevantes: `Content-Type: application/json`,
 
 ## 3. `POST /api/incidents` — Crear incidencia (idempotente)
 
-- **Sprint:** 2 · **Estado:** pendiente (falta la subida a Cloudinary).
-- **Cuerpo:** `multipart/form-data` o JSON con `photoBase64` en Sprint 2.
+- **Sprint:** 2 · **Estado:** implementado.
+- **Cuerpo:** `multipart/form-data` (con el archivo opcional `photo`) o JSON.
+- **Foto:** se sube a Cloudinary desde memoria (`multer.memoryStorage`), nunca al disco de Render. Si `CLOUDINARY_URL` no está configurada la incidencia se guarda igual con `photo_url = null` y la respuesta lo indica con `photoStorageEnabled: false`.
 
 | Campo | Tipo | Requerido | Notas |
 | --- | --- | --- | --- |
 | `clientReportId` | UUID | sí | Generado en el dispositivo; **UNIQUE** en PostgreSQL |
 | `deviceId` | UUID | sí | UUID persistido en IndexedDB (`meta`) |
-| `title` | string | sí | máx. 120 |
+| `title` | string | sí | 3…120 |
 | `description` | string | no | máx. 600 |
 | `lat` | number | sí | −90…90 |
 | `lng` | number | sí | −180…180 |
-| `photo` | file | no | JPEG comprimido en Canvas (~800 px, calidad 0.7) |
+| `photo` | file | no | JPEG/PNG/WebP/HEIC, máx. 5 MB (`MAX_PHOTO_BYTES`); JPEG comprimido en Canvas (~800 px, calidad 0.7) |
 
 **Idempotencia:** si `clientReportId` ya existe, el backend **no** crea un
 duplicado y responde `200` con el registro existente (`data.created = false`).
@@ -76,8 +78,23 @@ Un envío nuevo responde `201` con `data.created = true`.
 
 ```jsonc
 // 201 (o 200 si ya existía)
-{ "ok": true, "data": { "created": true, "incident": { "id": 12, "status": "synced", "…": "…" } }, "error": null }
+{
+  "ok": true,
+  "data": {
+    "created": true,
+    "photoStored": true,
+    "photoStorageEnabled": true,
+    "incident": { "id": 12, "status": "synced", "photo_url": "https://res.cloudinary.com/…", "…": "…" }
+  },
+  "error": null
+}
 ```
+
+| Error | Código | Cuándo |
+| --- | --- | --- |
+| 400 | `VALIDATION_ERROR` | Falta un campo obligatorio o tiene formato inválido |
+| 413 | `PHOTO_TOO_LARGE` | La foto supera `MAX_PHOTO_BYTES` |
+| 415 | `UNSUPPORTED_MEDIA_TYPE` | El archivo no es JPEG/PNG/WebP/HEIC |
 
 ---
 
