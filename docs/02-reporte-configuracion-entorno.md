@@ -57,12 +57,19 @@ Requisito del PDF: **`Cache-Control: no-store, max-age=0`** en desarrollo.
 
 | Entorno | Recurso | Cabecera |
 |---|---|---|
-| Desarrollo (Vite) | Todo | `Cache-Control: no-store, max-age=0`, `Pragma: no-cache`, `Expires: 0` |
+| Desarrollo (`npm run dev`, puerto 5173) | Todo | `Cache-Control: no-store, max-age=0`, `Pragma: no-cache`, `Expires: 0` |
+| Vista previa del build (`npm run preview`, puerto 4173) | Todo | `Cache-Control: no-cache` |
 | Producción | `/sw.js` | `public, max-age=0, must-revalidate` |
 | Producción | `/manifest.json` | `public, max-age=0, must-revalidate` |
 | Producción | `/assets/*` (con hash) | `public, max-age=31536000, immutable` |
 
-Configurado en `pwa-frontend/vite.config.js` (desarrollo),
+> **Por qué `preview` no usa `no-store`:** `npm run preview` sirve el build de
+> producción, así que imita sus cabeceras. Una respuesta `no-store` **no se puede
+> guardar en la Cache API**, y el Service Worker (Sprint 2) se quedaría sin el
+> Application Shell precargado. `no-store` se mantiene donde el PDF lo pide: en
+> el servidor de **desarrollo**.
+
+Configurado en `pwa-frontend/vite.config.js` (desarrollo y preview),
 `pwa-frontend/vercel.json` (Vercel) y `pwa-frontend/public/_headers`
 (Cloudflare Pages).
 
