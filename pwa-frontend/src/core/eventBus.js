@@ -50,6 +50,12 @@ export const EVENTS = Object.freeze({
   OFFLINE: 'offline',
   OUTBOX_CHANGED: 'outbox:changed',
   SYNC_DONE: 'sync:done',
+  // Ciclo de vida del Service Worker
+  SW_READY: 'sw:ready',
+  SW_UPDATE_AVAILABLE: 'sw:update-available',
+  SW_ERROR: 'sw:error',
+  // Formulario (el outbox real llega en el Sprint 3)
+  DRAFT_CHANGED: 'draft:changed',
 });
 
 export default eventBus;
