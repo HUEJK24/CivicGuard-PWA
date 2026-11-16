@@ -55,7 +55,7 @@ Requisitos: Node 20+, npm. Para el APK: JDK 17 y Android SDK.
 | Sprint | Alcance | Estado |
 |---|---|---|
 | **1** | Arquitectura, entorno seguro, shell + manifest, `/health`, CI | ✅ Completado |
-| 2 | Service Worker, renderizado mixto, `POST /api/incidents` | Pendiente |
+| **2** | Service Worker, renderizado mixto, `POST /api/incidents` con Cloudinary | ✅ Completado |
 | 3 | Offline avanzado, GPS y cámara, outbox, idempotencia | Pendiente |
 | 4 | Push, Lighthouse, APK, producción | Pendiente |
 
@@ -65,6 +65,7 @@ Requisitos: Node 20+, npm. Para el APK: JDK 17 y Android SDK.
 - [Tabla Comparativa](docs/01-tabla-comparativa.md)
 - [Reporte de Configuración del Entorno](docs/02-reporte-configuracion-entorno.md)
 - [Contrato de API](docs/03-contrato-api.md)
+- [Mapeo del Ciclo de Vida del Service Worker](docs/04-mapeo-ciclo-vida-sw.md)
 
 ## Reglas del proyecto
 
