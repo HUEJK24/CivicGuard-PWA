@@ -199,11 +199,42 @@ $ npm run check:storage
 Tres trabajos en cada PR a `develop`/`main`: `Frontend (lint + build)`,
 `Backend (lint)` y `Prohibido localStorage / sessionStorage`.
 
-**Prueba exigida por el PDF:** abrir un PR de prueba que contenga
-`localStorage.setItem('x', 1)` en `pwa-frontend/src/` y comprobar que el trabajo
-`Prohibido localStorage / sessionStorage` falla en rojo.
+**Prueba exigida por el PDF — el CI bloquea un PR con `localStorage`.**
 
-⟨Captura del PR en rojo⟩
+Se abrió el PR de prueba **#8** (`test/ci-localstorage-block`) que agrega
+`pwa-frontend/src/prueba-localstorage.js` con `localStorage.setItem('prueba', '1')`.
+
+Resultado de los checks (`gh pr checks 8`):
+
+| Trabajo | Resultado |
+|---|---|
+| Prohibido localStorage / sessionStorage | **fail** (8 s) |
+| Backend (lint) | pass |
+| Frontend (lint + build) | pass |
+
+Run: <https://github.com/HUEJK24/CivicGuard-PWA/actions/runs/43801367602>
+
+Salida del chequeo:
+
+```console
+✖ Se encontró almacenamiento web prohibido (localStorage/sessionStorage):
+
+  pwa-frontend/src/prueba-localstorage.js:3  [localStorage]  localStorage.setItem('prueba', '1');
+
+Usa IndexedDB a través de IndexedDbManager (src/db/indexedDbManager.js).
+# exit 1
+```
+
+Y el merge quedó bloqueado por la protección de ramas:
+
+```console
+$ gh pr merge 8 --merge
+X Pull request #8 is not mergeable: the base branch policy prohibits the merge.
+```
+
+El PR se cerró sin fusionar y su rama se eliminó.
+
+⟨Captura del PR #8 en rojo⟩
 
 ### 8.5 Celular real
 
@@ -219,3 +250,36 @@ Tres trabajos en cada PR a `develop`/`main`: `Frontend (lint + build)`,
 | GPS/cámara no pedían permiso | La página se abrió por IP de LAN (`http://`) | Probar siempre por HTTPS (ngrok) o `localhost` |
 | El shell mostraba versiones viejas | El navegador cacheaba `index.html` | `Cache-Control: no-store, max-age=0` en Vite |
 | `npm ci` fallaba en CI | Faltaba `package-lock.json` versionado | Se versionan los dos `package-lock.json` |
+| Advertencia de deprecación en el CI | `actions/checkout@v4` y `setup-node@v4` corren sobre Node 20 | Actualizado a `@v5` con Node 22 |
+
+## 10. Protección de ramas
+
+Configurada con `gh api` en `main` y `develop`:
+
+| Regla | Valor |
+|---|---|
+| Requiere Pull Request antes de fusionar | Sí |
+| Revisiones obligatorias | 0 (activar 1 al invitar al equipo) |
+| Checks obligatorios | `Frontend (lint + build)`, `Backend (lint)`, `Prohibido localStorage / sessionStorage` |
+| Conversación resuelta | Sí |
+| Force push / borrado de la rama | Bloqueados |
+
+Para exigir **1 aprobación de otra persona** (cuando el equipo esté como
+colaborador del repositorio):
+
+```bash
+gh api -X PATCH repos/HUEJK24/CivicGuard-PWA/branches/develop/protection/required_pull_request_reviews \
+  -F required_approving_review_count=1
+```
+
+## 11. Flujo de trabajo aplicado en el Sprint 1
+
+| PR | Rama | Persona | Contenido |
+|---|---|---|---|
+| #1 | `feature/p1-core-offline` | P1 | Estructura, IndexedDB Singleton, EventBus, chequeo anti-localStorage |
+| #2 | `feature/p2-ui-manifest` | P2 | manifest, iconos maskable, Application Shell |
+| #3 | `feature/p3-backend` | P3 | Backend por capas, `/health`, CORS, contrato de API |
+| #4 | `feature/p4-devops-qa` | P4 | CI, entorno seguro, caché, documentación |
+| #5 | `develop` → `main` | equipo | Release del Sprint 1 |
+| #6 | `chore/ci-actions-v5` | P4 | Actions v5 y Node 22 |
+| #8 | `test/ci-localstorage-block` | P4 | **Cerrado sin fusionar**: prueba de que el CI bloquea |
