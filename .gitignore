@@ -51,3 +51,6 @@ opencode.jsonc
 .windsurf/
 .playwright-mcp/
 prompts/
+
+# Capturas de pruebas locales
+sprint*.png
