@@ -17,12 +17,40 @@
     return fetch(request, { signal: controller.signal }).finally(() => clearTimeout(timer));
   }
 
-  /** Guarda en caché solo respuestas válidas y cacheables. */
-  async function putIfCacheable(cache, request, response) {
-    if (!response || !response.ok || response.type === 'opaque') return;
+  /**
+   * Deja la respuesta lista para la Cache API.
+   *
+   * La Cache API respeta la cabecera `Vary`: si el servidor responde
+   * `Vary: Origin` (Vite preview y varias CDN lo hacen), la entrada guardada
+   * desde una petición del Service Worker **no** coincide con la petición real
+   * del navegador y el recurso precargado nunca se sirve. Como este Service
+   * Worker solo cachea recursos de su propio origen, la cabecera `Vary` no
+   * aporta nada: se elimina antes de guardar.
+   *
+   * @param {Response} response
+   * @returns {Response | null} respuesta lista para `cache.put`, o null si no
+   *   debe guardarse.
+   */
+  function toCacheable(response) {
+    if (!response || !response.ok || response.type === 'opaque') return null;
+
     const cacheControl = response.headers.get('Cache-Control') ?? '';
-    if (cacheControl.includes('no-store')) return;
-    await cache.put(request, response.clone());
+    if (cacheControl.includes('no-store')) return null;
+
+    const headers = new Headers(response.headers);
+    headers.delete('Vary');
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
+
+  /** Guarda en caché solo respuestas válidas y cacheables. */
+  async function putCacheable(cache, key, response) {
+    const cacheable = toCacheable(response.clone());
+    if (cacheable) await cache.put(key, cacheable);
   }
 
   const strategies = {
@@ -39,7 +67,7 @@
       if (cached) return cached;
 
       const response = await fetch(request);
-      await putIfCacheable(cache, request, response);
+      await putCacheable(cache, request, response);
       return response;
     },
 
@@ -51,7 +79,7 @@
       const cache = await caches.open(cacheName);
       try {
         const response = await fetchWithTimeout(request, timeoutMs);
-        await putIfCacheable(cache, request, response);
+        await putCacheable(cache, request, response);
         return response;
       } catch (error) {
         const cached = await cache.match(request);
@@ -70,7 +98,7 @@
 
       const network = fetch(request)
         .then(async (response) => {
-          await putIfCacheable(cache, request, response);
+          await putCacheable(cache, request, response);
           return response;
         })
         .catch(() => undefined);
@@ -92,4 +120,5 @@
   };
 
   global.CivicGuardStrategies = strategies;
+  global.CivicGuardCache = Object.freeze({ toCacheable, putCacheable });
 })(self);

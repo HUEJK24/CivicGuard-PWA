@@ -13,10 +13,11 @@
 importScripts('./sw-strategies.js');
 
 const { cacheFirst, networkFirst, staleWhileRevalidate } = self.CivicGuardStrategies;
+const { putCacheable } = self.CivicGuardCache;
 
 const CACHE_VERSION = '__CACHE_VERSION__';
 const PRECACHE_URLS = [
-  /* __PRECACHE_URLS__ */
+/* __PRECACHE_URLS__ */
 ];
 
 const CACHE_PREFIX = 'civicguard';
@@ -79,7 +80,8 @@ async function precacheShell() {
       // caché HTTP dentro del caché del Service Worker.
       const response = await fetch(new Request(url, { cache: 'reload' }));
       if (!response.ok) throw new Error(`${response.status} al precargar ${url}`);
-      await cache.put(url, response);
+      // `putCacheable` limpia `Vary`, que rompería el `match()` posterior.
+      await putCacheable(cache, url, response);
     }),
   );
 
