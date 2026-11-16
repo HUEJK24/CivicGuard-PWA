@@ -12,7 +12,7 @@ out/
 coverage/
 *.tsbuildinfo
 
-# Entorno y secretos
+# Entorno y secretos (NUNCA se versionan)
 .env
 .env.*
 !.env.example
@@ -26,6 +26,19 @@ yarn-error.log*
 # Python (skill ui-ux-pro-max)
 __pycache__/
 *.pyc
+
+# Despliegue
+.vercel/
+.wrangler/
+
+# Android / TWA (Sprint 4) — la llave de firma NUNCA se versiona
+android-twa/app/
+android-twa/build/
+android-twa/.gradle/
+*.jks
+*.keystore
+*.apk
+*.aab
 
 # Herramientas de agente y material de IA (no se publica)
 skills/
