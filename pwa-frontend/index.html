@@ -355,7 +355,8 @@
       <p class="brand__tagline">Reporta incidencias urbanas, con o sin conexión.</p>
     </header>
 
-    <!-- Estado de red: lo actualiza el EventBus (Sprint 2) -->
+    <!-- Estado de red: parte del shell estático; lo muestra u oculta
+         src/ui/offlineBanner.js reaccionando al EventBus -->
     <p id="offline-banner" class="banner" role="status" aria-live="polite" hidden>
       Sin conexión — tus reportes se guardan en el dispositivo.
     </p>
