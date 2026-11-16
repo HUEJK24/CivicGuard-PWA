@@ -5,6 +5,7 @@ import { HttpError } from '../utils/httpError.js';
  *
  * @example
  * router.post('/', validate({ title: { type: 'string', required: true, max: 120 } }), handler)
+ * router.get('/', validate({ limit: { type: 'number', max: 100 } }, 'query'), handler)
  *
  * @param {Record<string, {
  *   type?: 'string' | 'number' | 'boolean',
@@ -15,12 +16,13 @@ import { HttpError } from '../utils/httpError.js';
  *   pattern?: RegExp,
  *   default?: unknown,
  * }>} rules
+ * @param {'body' | 'query'} [source] De dónde se leen los valores (por defecto `body`).
  */
-export function validate(rules) {
+export function validate(rules, source = 'body') {
   return (req, _res, next) => {
     const errors = [];
     const data = {};
-    const body = req.body ?? {};
+    const body = (source === 'query' ? req.query : req.body) ?? {};
 
     for (const [field, rule] of Object.entries(rules)) {
       let value = body[field];
