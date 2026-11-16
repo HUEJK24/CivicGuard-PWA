@@ -183,7 +183,90 @@ Consola esperada en el primer arranque:
 ⟨Captura: Cache Storage con las tres cachés `civicguard-*`⟩
 ⟨Captura: recarga con Network en Offline mostrando el shell⟩
 
-## 5. Pendiente para los siguientes sprints
+## 5. Dos detalles que rompen el precache si se ignoran
+
+### `Vary` en la Cache API
+
+La Cache API **respeta** la cabecera `Vary` al hacer `match()`. Vite preview
+responde `Vary: Origin`, así que una respuesta guardada desde una petición del
+Service Worker no coincide con la petición real del navegador y el recurso
+precargado nunca se sirve (síntoma: sin conexión aparece `Cargando formulario…`
+y en consola `net::ERR_FAILED` sobre `/assets/index-*.js`).
+
+Como este Service Worker solo cachea recursos de su propio origen, `Vary` no
+aporta nada: `toCacheable()` en `sw-strategies.js` la elimina antes de guardar.
+Es la única función que decide qué se guarda, y la usan tanto las estrategias
+como la precarga del `install`.
+
+### `CACHE_VERSION` debe incluir el propio `sw.js`
+
+La versión se calcula con el hash del contenido de `dist/`. Si solo se hasheara
+el shell, una corrección en `sw.js` (por ejemplo la de `Vary`) mantendría la
+versión anterior, `activate` no borraría la caché vieja y el error seguiría ahí.
+Por eso el hash incluye `sw.js` y `sw-strategies.js`, aunque **no** entren en
+`PRECACHE_URLS`.
+
+## 6. Evidencia de la prueba de actualización
+
+Secuencia ejecutada en Chrome con Playwright (build `b12548898663` → build
+`dc9bc30d2ba5`):
+
+```text
+[info] [SW] install · versión dc9bc30d2ba5
+[info] [SW] Precarga dc9bc30d2ba5: 8/8 recursos
+[info] [SW] install completado · skipWaiting()
+[info] [SW] activate · versión dc9bc30d2ba5
+[info] [SW] Cachés eliminadas: civicguard-shell-b12548898663
+[info] [SW] activate completado · clients.claim()
+```
+
+| Comprobación | Resultado |
+|---|---|
+| Cachés antes | `['civicguard-shell-b12548898663']` |
+| Cachés después | `['civicguard-shell-dc9bc30d2ba5']` |
+| Recursos precargados | 8/8 (7 archivos + `/`) |
+| IndexedDB | intacta (solo se borran cachés `civicguard-*`) |
+| Formulario tras la actualización | renderizado y funcional |
+
+Prueba de modo avión (mismo build, red desconectada con `context.setOffline(true)`):
+
+| Comprobación | Resultado |
+|---|---|
+| Navegación `/` | servida desde `civicguard-shell-<versión>` |
+| Formulario CSR | renderizado |
+| Banner «Sin conexión» | visible |
+| `[SW] ... falló` en consola | ninguno |
+| Al volver la conexión | el banner se oculta |
+
+## 7. Primera pasada de Lighthouse (Sprint 2 · P4)
+
+```bash
+cd pwa-frontend
+npm run build && npm run preview      # http://localhost:4173
+npx lighthouse http://localhost:4173/ \
+  --only-categories=performance,accessibility,best-practices,pwa \
+  --chrome-flags="--headless=new"
+```
+
+| Categoría | Puntaje |
+|---|---|
+| Performance | 99 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| **PWA** | **100** |
+
+Auditorías de instalabilidad: `installable-manifest` ✔, `maskable-icon` ✔,
+`themed-omnibox` ✔, `splash-screen` ✔.
+
+Métricas: FCP 0.8 s · LCP 1.0 s · TBT 0 ms · CLS 0.065 · Speed Index 0.8 s.
+
+> Lighthouse 12 eliminó la categoría **PWA**; el puntaje de 100 proviene de
+> Lighthouse 11.7.1. En 12.8.2 el resultado es Performance 82 · Accessibility 100 ·
+> Best Practices 100.
+
+⟨Captura: reporte de Lighthouse con PWA 100⟩
+
+## 8. Pendiente para los siguientes sprints
 
 | Sprint | Qué se añade a `sw.js` |
 |---|---|
