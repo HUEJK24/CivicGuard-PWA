@@ -2,14 +2,21 @@ import { eventBus, EVENTS } from './core/eventBus.js';
 import { reportEnvironment } from './core/environment.js';
 import swRegistrationManager from './core/swRegistrationManager.js';
 import indexedDbManager from './db/indexedDbManager.js';
+import { mountShell } from './ui/shellComponents.js';
+import offlineBanner from './ui/offlineBanner.js';
 
 /**
  * Punto de entrada de la PWA.
  * Sprint 1: contexto seguro + Singleton de IndexedDB.
- * Sprint 2: registro del Service Worker (solo en build de producción).
+ * Sprint 2: shell con renderizado mixto, banner offline y Service Worker.
  */
 async function bootstrap() {
   const environment = reportEnvironment();
+
+  // El shell se monta antes de tocar IndexedDB: la UI aparece aunque la base
+  // de datos tarde (o falle), y sigue funcionando sin conexión.
+  mountShell();
+  offlineBanner.mount();
 
   try {
     const db = await indexedDbManager.open();
