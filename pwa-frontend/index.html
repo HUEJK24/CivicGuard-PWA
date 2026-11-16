@@ -255,6 +255,70 @@
         font-size: 0.9375rem;
       }
 
+      .slot {
+        display: grid;
+        gap: 14px;
+      }
+
+      .list__item {
+        display: grid;
+        gap: 6px;
+        padding: 12px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+
+      .list__head {
+        display: flex;
+        gap: 10px;
+        align-items: start;
+        justify-content: space-between;
+      }
+
+      .list__title {
+        font-weight: 600;
+      }
+
+      .list__meta {
+        margin: 0;
+        font-size: 0.8125rem;
+        color: var(--muted);
+      }
+
+      .tag {
+        flex: none;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: #fff4d6;
+        color: #4a3a05;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .tag {
+          background: #3a3011;
+          color: #ffe9ad;
+        }
+      }
+
+      .status {
+        margin: 0;
+        min-height: 1.25rem;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+
+      .status[data-tone="error"] {
+        color: var(--danger);
+      }
+
+      .status[data-tone="ok"] {
+        color: var(--brand);
+      }
+
       .app-footer {
         padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
         text-align: center;
@@ -303,50 +367,19 @@
         </p>
       </noscript>
 
-      <!-- Placeholder estático: el formulario se hidrata por CSR en Sprint 2 -->
+      <!-- Renderizado mixto: el marcado de abajo es el placeholder estático que
+           ve el usuario antes de que cargue el JS; el formulario real lo
+           reemplaza src/ui/shellComponents.js (CSR). -->
       <section class="card" aria-labelledby="report-title">
         <h2 class="card__title" id="report-title">Nuevo reporte</h2>
-        <form class="form" id="report-form" novalidate>
-          <div class="field">
-            <label class="field__label" for="report-title-input">Título</label>
-            <input
-              id="report-title-input"
-              name="title"
-              type="text"
-              maxlength="120"
-              autocomplete="off"
-              placeholder="Bache en la calle 5 de Mayo"
-            />
-          </div>
-
-          <div class="field">
-            <label class="field__label" for="report-description">Descripción</label>
-            <textarea
-              id="report-description"
-              name="description"
-              maxlength="600"
-              placeholder="Describe el problema y una referencia del lugar."
-            ></textarea>
-          </div>
-
-          <div class="field">
-            <span class="field__label">Evidencia</span>
-            <div class="evidence">
-              <button class="button button--ghost" type="button" id="capture-evidence">
-                Capturar GPS y foto
-              </button>
-              <span class="field__hint" id="evidence-status">Sin datos todavía</span>
-            </div>
-          </div>
-
-          <button class="button" type="submit" id="submit-report">Guardar reporte</button>
-        </form>
+        <div class="slot" id="report-form-slot">
+          <p class="field__hint">Cargando formulario…</p>
+        </div>
       </section>
 
-      <!-- Placeholder estático: la lista se renderiza por CSR en Sprint 3 -->
       <section class="card" aria-labelledby="list-title">
         <h2 class="card__title" id="list-title">Reportes</h2>
-        <ul class="list" id="incident-list">
+        <ul class="list" id="incident-list" aria-live="polite">
           <li class="list__empty">Aún no hay reportes en este dispositivo.</li>
         </ul>
       </section>
