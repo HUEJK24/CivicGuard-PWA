@@ -18,10 +18,10 @@ jobs:
       run:
         working-directory: pwa-frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: pwa-frontend/package-lock.json
       - run: npm ci
@@ -35,10 +35,10 @@ jobs:
       run:
         working-directory: headless-backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: headless-backend/package-lock.json
       - run: npm ci
@@ -48,9 +48,9 @@ jobs:
     name: Prohibido localStorage / sessionStorage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Buscar localStorage y sessionStorage en la PWA
         run: node scripts/check-storage.mjs
