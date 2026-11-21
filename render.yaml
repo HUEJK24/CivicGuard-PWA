@@ -1,5 +1,6 @@
 # ── API REST de CivicGuard (Render) ─────────────────────────────────────────
 # Blueprint opcional: https://render.com/docs/blueprint-spec
+# La API se desplegará después; la BD se crea en Neon (fuera de Render).
 services:
   - type: web
     name: civicguard-api
@@ -15,7 +16,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false # se captura en el panel de Render (Neon)
+        sync: false # se captura en el panel de Render (URL de Neon)
       - key: ADMIN_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS

@@ -1,5 +1,9 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+
+dotenv.config({ path: fileURLToPath(new URL('../../../.env.local', import.meta.url)) });
+dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) });
 
 /** @param {string | undefined} value @param {string[]} fallback */
 function toList(value, fallback = []) {
@@ -11,7 +15,10 @@ function toList(value, fallback = []) {
 }
 
 const databaseUrl = process.env.DATABASE_URL?.trim() ?? '';
-const isLocalDatabase = /(^|@)(localhost|127\.0\.0\.1)/.test(databaseUrl);
+const databaseUrlUnpooled = process.env.DATABASE_URL_UNPOOLED?.trim() ?? '';
+const isLocal = (url) => /(^|@)(localhost|127\.0\.0\.1)/.test(url);
+const isLocalDatabase = isLocal(databaseUrl);
+const isLocalUnpooled = isLocal(databaseUrlUnpooled);
 
 /**
  * Configuración central. Único lugar del backend que lee process.env.
@@ -23,8 +30,12 @@ export const env = Object.freeze({
   port: Number(process.env.PORT ?? 3000),
 
   databaseUrl,
+  /** Migraciones/dumps usan la URL directa (sin -pooler). */
+  databaseUrlUnpooled,
   /** Neon exige TLS; se desactiva para Postgres local. */
   databaseSsl: databaseUrl && !isLocalDatabase ? { rejectUnauthorized: false } : undefined,
+  databaseSslUnpooled:
+    databaseUrlUnpooled && !isLocalUnpooled ? { rejectUnauthorized: false } : undefined,
 
   allowedOrigins: toList(process.env.ALLOWED_ORIGINS, ['http://localhost:5173']),
   adminApiKey: process.env.ADMIN_API_KEY?.trim() ?? '',

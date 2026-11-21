@@ -150,20 +150,46 @@ npx vercel --prod
 # las cabeceras se toman de vercel.json
 ```
 
-### API en Render
+### Base de datos en Neon (solo BD, sin API)
 
-Con el blueprint `render.yaml` del repositorio:
-**Render → New → Blueprint → seleccionar el repo**. Luego capturar
-`DATABASE_URL`, `ADMIN_API_KEY` y `ALLOWED_ORIGINS` en el panel
-(están marcadas como `sync: false`).
-
-### Base de datos en Neon
+La BD se gestiona con la CLI de Neon; Render solo recibirá `DATABASE_URL`
+cuando se despliegue la API. No hay que crear un blueprint de Render para ella.
 
 ```bash
-cd headless-backend
-npm run db:apply        # aplica db/schema.sql (idempotente)
-# ✔ Esquema aplicado. Tablas: incidents, push_subscriptions
+npm i -g neon@latest
+neon login                      # si no hay credenciales activas
+neon init -y --org-id <org-id> --project-id <project-id> \
+  --branch production --services postgres
+neon deploy                     # aplica neon.ts y baja las vars a .env.local
+npm --prefix headless-backend run db:apply
+neon status
 ```
+
+- `neon init` vincula el proyecto (`.neon`, ignorado por Git) y genera `neon.ts`.
+- `neon deploy` concilia el branch `production` y escribe en `.env.local`
+  (también ignorado): `DATABASE_URL` (pooled, para la app),
+  `DATABASE_URL_UNPOOLED` (directa, para migraciones), `NEON_BRANCH`,
+  `NEON_BRANCH_ID` y `NEON_FUNCTION_HOST_SUFFIX`.
+- `headless-backend/src/config/env.js` carga `.env.local` de la raíz y, si
+  existe, `headless-backend/.env` (este último con prioridad).
+- `scripts/apply-schema.mjs` usa `DATABASE_URL_UNPOOLED` para el DDL, según la
+  recomendación de las Neon skills (PgBouncer no soporta operaciones de sesión).
+- Resultado esperado: `✔ Esquema aplicado. Tablas: incidents, push_subscriptions`.
+
+Si una connection string se compartió por accidente, rotar la contraseña en
+Neon → *Connection Details → Reset password* y luego `neon env pull`.
+
+### API en Render (después)
+
+Con el blueprint `render.yaml` del repositorio:
+**Render → New → Blueprint → seleccionar el repo**. `DATABASE_URL` queda como
+`sync: false`, así que hay que pegar la cadena de Neon en el panel de Render
+junto con `ADMIN_API_KEY`, `ALLOWED_ORIGINS` y `CLOUDINARY_URL`.
+
+> Neon exige TLS; `src/config/env.js` ya activa SSL automáticamente para
+> cualquier host que no sea `localhost`/`127.0.0.1`, así que no hace falta
+> cambiar código. La API puede estar en `oregon` aunque Neon esté en otra
+> región: la conexión sale por Internet con TLS.
 
 ## 8. Evidencia de verificación (Sprint 1)
 

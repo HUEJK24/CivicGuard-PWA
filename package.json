@@ -13,5 +13,9 @@
     "check:storage": "node scripts/check-storage.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "verify": "npm run lint && npm run check:storage && npm run build"
+  },
+  "dependencies": {
+    "@neon/config": "^1.14.6",
+    "@neon/env": "^2.1.9"
   }
 }
