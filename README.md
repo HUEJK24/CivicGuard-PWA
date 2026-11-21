@@ -30,7 +30,7 @@ PWA (Vanilla JS + Vite)  →  API REST (Node + Express, Render)  →  PostgreSQL
 
 ```bash
 npm run install:all
-cp headless-backend/.env.example headless-backend/.env   # completar variables
+# crear headless-backend/.env solo en local con las variables
 
 npm run dev          # PWA en http://localhost:5173
 npm run dev:api      # API en http://localhost:3000

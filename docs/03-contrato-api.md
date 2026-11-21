@@ -146,4 +146,4 @@ Un envío nuevo responde `201` con `data.created = true`.
 
 `DATABASE_URL`, `ALLOWED_ORIGINS`, `ADMIN_API_KEY`, `VAPID_PUBLIC_KEY`,
 `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `CLOUDINARY_URL`, `PORT`, `NODE_ENV`.
-Ver `headless-backend/.env.example`. **Ninguna se versiona.**
+**Ninguna se versiona:** crear `headless-backend/.env` solo en local.

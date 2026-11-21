@@ -15,7 +15,6 @@ coverage/
 # Entorno y secretos (NUNCA se versionan)
 .env
 .env.*
-!.env.example
 
 # Logs
 *.log

@@ -13,7 +13,7 @@ import { env } from '../src/config/env.js';
 async function main() {
   const connectionString = env.databaseUrlUnpooled || env.databaseUrl;
   if (!connectionString) {
-    console.error('✖ DATABASE_URL no está configurada (copia .env.example a .env).');
+    console.error('✖ DATABASE_URL no está configurada (crea .env en local).');
     process.exit(1);
   }
 
