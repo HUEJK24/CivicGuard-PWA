@@ -174,5 +174,38 @@ self.addEventListener('message', (event) => {
   }
 });
 
-/* Los listeners de `sync` (Background Sync) y `push` (notificaciones) llegan
- * en los Sprints 3 y 4 respectivamente. */
+self.addEventListener('push', (event) => {
+  let notification = {};
+  try {
+    notification = event.data?.json() ?? {};
+  } catch (error) {
+    console.warn('[SW] El contenido de la notificación push no es JSON válido:', error);
+  }
+
+  const title = notification.title || 'CivicGuard';
+  const options = {
+    body: notification.body || 'Hay una actualización en uno de tus reportes.',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    data: { url: notification.url || '/' },
+    tag: notification.incidentId ? `incident-${notification.incidentId}` : 'civicguard-update',
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = new URL(event.notification.data?.url || '/', self.location.origin);
+  if (targetUrl.origin !== self.location.origin) return;
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const existing = clients.find((client) => new URL(client.url).origin === self.location.origin);
+      if (existing) {
+        return existing.navigate(targetUrl.href).then(() => existing.focus());
+      }
+      return self.clients.openWindow(targetUrl.href);
+    }),
+  );
+});

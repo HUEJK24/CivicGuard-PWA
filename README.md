@@ -30,7 +30,7 @@ PWA (Vanilla JS + Vite)  →  API REST (Node + Express, Render)  →  PostgreSQL
 
 ```bash
 npm run install:all
-cp headless-backend/.env.example headless-backend/.env   # completar variables
+# Crea headless-backend/.env con las variables documentadas en docs/02 y docs/03
 
 npm run dev          # PWA en http://localhost:5173
 npm run dev:api      # API en http://localhost:3000
@@ -38,6 +38,15 @@ npm run verify       # lint + chequeo anti-localStorage + build
 ```
 
 Requisitos: Node 20+, npm. Para el APK: JDK 17 y Android SDK.
+
+Para habilitar Push, configura `DATABASE_URL`, `ADMIN_API_KEY` y las claves
+`VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` en `headless-backend/.env`. Genera un
+par VAPID con `npx web-push generate-vapid-keys` desde `headless-backend/`.
+Si el frontend y la API tienen distintos orígenes, configura
+`VITE_API_BASE_URL` en `pwa-frontend/.env` con la URL base de la API (en modo
+desarrollo la PWA usa `http://localhost:3000` por defecto). En el dispositivo,
+activa los avisos desde **Avisos de tus reportes**; se requiere HTTPS (localhost
+sirve para pruebas). La llave privada VAPID nunca debe ponerse en el frontend.
 
 ## Estructura
 
@@ -57,7 +66,7 @@ Requisitos: Node 20+, npm. Para el APK: JDK 17 y Android SDK.
 | **1** | Arquitectura, entorno seguro, shell + manifest, `/health`, CI | ✅ Completado |
 | **2** | Service Worker, renderizado mixto, `POST /api/incidents` con Cloudinary | ✅ Completado |
 | 3 | Offline avanzado, GPS y cámara, outbox, idempotencia | Pendiente |
-| 4 | Push, Lighthouse, APK, producción | Pendiente |
+| 4 | Push, Lighthouse, APK, producción | Push implementado; sprint pendiente |
 
 ## Documentación
 

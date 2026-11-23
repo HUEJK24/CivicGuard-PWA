@@ -25,7 +25,7 @@ caché y la validación de contexto seguro.
 git clone https://github.com/HUEJK24/CivicGuard-PWA.git
 cd CivicGuard-PWA
 npm run install:all          # instala pwa-frontend y headless-backend
-cp headless-backend/.env.example headless-backend/.env
+# Crear headless-backend/.env con las variables de la tabla siguiente
 ```
 
 Editar `headless-backend/.env`:

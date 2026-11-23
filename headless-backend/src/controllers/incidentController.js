@@ -1,5 +1,6 @@
 import incidentService from '../services/incidentService.js';
 import photoService from '../services/photoService.js';
+import pushService from '../services/pushService.js';
 import { sendOk } from '../utils/response.js';
 
 /** GET /api/incidents */
@@ -26,6 +27,15 @@ export async function createIncident(req, res, next) {
       photo: req.file,
     });
 
+    if (created) {
+      await pushService.notifyDevice(incident.device_id, {
+        title: 'Reporte recibido',
+        body: `Tu reporte «${incident.title}» está en revisión.`,
+        url: `/?reportId=${incident.id}`,
+        incidentId: incident.id,
+      });
+    }
+
     return sendOk(
       res,
       {
@@ -41,4 +51,22 @@ export async function createIncident(req, res, next) {
   }
 }
 
-export default { listIncidents, createIncident };
+/** PATCH /api/incidents/:id/resolve */
+export async function resolveIncident(req, res, next) {
+  try {
+    const { incident, changed } = await incidentService.resolve(req.params.id);
+    if (changed) {
+      await pushService.notifyDevice(incident.device_id, {
+        title: 'Reporte resuelto',
+        body: `La incidencia «${incident.title}» fue resuelta.`,
+        url: `/?reportId=${incident.id}`,
+        incidentId: incident.id,
+      });
+    }
+    return sendOk(res, { incident });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export default { listIncidents, createIncident, resolveIncident };

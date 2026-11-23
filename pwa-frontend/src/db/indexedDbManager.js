@@ -94,6 +94,28 @@ class IndexedDbManager {
     return this.run(store, 'readonly', (tx) => tx.objectStore(store).getAll());
   }
 
+  /** Obtiene o crea el UUID estable que vincula este navegador con sus reportes. */
+  async getOrCreateDeviceId() {
+    const db = await this.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('meta', 'readwrite');
+      const store = tx.objectStore('meta');
+      const request = store.get('deviceId');
+      let deviceId;
+
+      request.onsuccess = () => {
+        deviceId = request.result?.value;
+        if (!deviceId) {
+          deviceId = crypto.randomUUID();
+          store.put({ key: 'deviceId', value: deviceId });
+        }
+      };
+      tx.oncomplete = () => resolve(deviceId);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error ?? new Error('Transacción abortada'));
+    });
+  }
+
   /** @param {string} store */
   clear(store) {
     return this.run(store, 'readwrite', (tx) => tx.objectStore(store).clear());

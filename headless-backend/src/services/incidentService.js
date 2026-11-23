@@ -57,13 +57,13 @@ export const incidentService = {
    */
   async resolve(id) {
     const incident = await incidentRepository.resolve(id);
-    if (incident) return incident;
+    if (incident) return { incident, changed: true };
 
     const current = await incidentRepository.findById(id);
     if (!current) {
       throw new HttpError(404, 'INCIDENT_NOT_FOUND', `No existe la incidencia ${id}.`);
     }
-    return current; // ya estaba resuelta: respuesta idempotente
+    return { incident: current, changed: false }; // ya estaba resuelta: respuesta idempotente
   },
 };
 

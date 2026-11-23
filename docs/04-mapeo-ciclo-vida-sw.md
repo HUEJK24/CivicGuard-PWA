@@ -271,4 +271,10 @@ Métricas: FCP 0.8 s · LCP 1.0 s · TBT 0 ms · CLS 0.065 · Speed Index 0.8 s.
 | Sprint | Qué se añade a `sw.js` |
 |---|---|
 | 3 | Listener `sync` con la etiqueta `sync-incidencias` (vacía la outbox) y `NetworkFirst` con fallback a IndexedDB para `GET /api/incidents` |
-| 4 | Listeners `push` (`showNotification`) y `notificationclick` (abrir el reporte resuelto) |
+| 4 | Listeners `push` (`showNotification`) y `notificationclick` (abrir el reporte actualizado) |
+
+El listener `push` y el clic en la notificación ya están implementados. La
+suscripción se activa desde la interfaz, se vincula al UUID del dispositivo en
+IndexedDB y se guarda en la API. Para probarlo, configura las claves VAPID en
+el backend, `VITE_API_BASE_URL` en el frontend si la API usa otro dominio, y
+usa HTTPS (o localhost) con `npm run build && npm run preview`.

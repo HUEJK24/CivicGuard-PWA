@@ -29,6 +29,11 @@ export const env = Object.freeze({
   allowedOrigins: toList(process.env.ALLOWED_ORIGINS, ['http://localhost:5173']),
   adminApiKey: process.env.ADMIN_API_KEY?.trim() ?? '',
 
+  // Sprint 4 — notificaciones push (Web Push / VAPID)
+  vapidPublicKey: process.env.VAPID_PUBLIC_KEY?.trim() ?? '',
+  vapidPrivateKey: process.env.VAPID_PRIVATE_KEY?.trim() ?? '',
+  vapidSubject: process.env.VAPID_SUBJECT?.trim() || 'mailto:equipo@civicguard.mx',
+
   // Sprint 2 — fotos de evidencia (Cloudinary)
   cloudinaryUrl: process.env.CLOUDINARY_URL?.trim() ?? '',
   cloudinaryFolder: process.env.CLOUDINARY_FOLDER?.trim() || 'civicguard/incidents',
