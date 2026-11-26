@@ -1,9 +1,7 @@
 import indexedDbManager from '../db/indexedDbManager.js';
 import swRegistrationManager from '../core/swRegistrationManager.js';
+import { apiRequest } from '../core/apiClient.js';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') ||
-  (import.meta.env.DEV ? 'http://localhost:3000' : location.origin);
 const BUTTON_ID = 'enable-push';
 const STATUS_ID = 'push-status';
 
@@ -11,15 +9,6 @@ function decodeApplicationServerKey(value) {
   const padding = '='.repeat((4 - (value.length % 4)) % 4);
   const base64 = `${value.replace(/-/g, '+').replace(/_/g, '/')}${padding}`;
   return Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
-}
-
-async function requestJson(path, options) {
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
-  const result = await response.json();
-  if (!response.ok || !result.ok) {
-    throw new Error(result.error?.message ?? `Error HTTP ${response.status}`);
-  }
-  return result.data;
 }
 
 function setStatus(message, tone = '') {
@@ -51,7 +40,7 @@ async function enablePush(button) {
       throw new Error('El Service Worker no está activo. Prueba la versión publicada o la vista previa.');
     }
 
-    const { publicKey } = await requestJson('/api/vapid-public-key');
+    const { publicKey } = await apiRequest('/api/vapid-public-key');
     let subscription = await registration.pushManager.getSubscription();
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
@@ -61,7 +50,7 @@ async function enablePush(button) {
     }
 
     const deviceId = await indexedDbManager.getOrCreateDeviceId();
-    await requestJson('/api/subscribe', {
+    await apiRequest('/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deviceId, subscription: subscription.toJSON() }),

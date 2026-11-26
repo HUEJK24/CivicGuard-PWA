@@ -1,26 +1,15 @@
-import { eventBus, EVENTS } from '../core/eventBus.js';
-
 /**
  * ShellComponents — renderizado mixto (Sprint 2).
  *
- * El Application Shell (cabecera, banner de conexión, tarjetas y footer) es
- * estático en `index.html`, así que se pinta desde el primer byte y queda
- * precargado en la Cache API. Lo que cambia según el estado de la app (el
- * formulario y la lista de reportes) se renderiza aquí por CSR.
- *
- * NOTA DE ALCANCE: los borradores viven en memoria. El guardado real en la
- * outbox de IndexedDB llega en el Sprint 3 (OutboxRepository); este módulo
- * solo se encarga del renderizado y de emitir el evento del formulario.
+ * El Application Shell es estático en `index.html`; el formulario y la lista
+ * de reportes se renderizan aquí por CSR.
  */
 
 const FORM_SLOT_ID = 'report-form-slot';
 const LIST_ID = 'incident-list';
 const COUNTER_ID = 'pending-counter';
+const API_STATUS_ID = 'api-status';
 
-/** Borradores de esta sesión (memoria). El Sprint 3 los persiste. */
-let drafts = [];
-
-/** Escapa texto antes de insertarlo con innerHTML. */
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -30,7 +19,6 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
-/** Formato local corto, sin dependencias. */
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleString('es-MX', {
     day: '2-digit',
@@ -66,114 +54,189 @@ function formMarkup() {
         ></textarea>
       </div>
 
-      <button class="button" type="submit" id="submit-report">Guardar reporte</button>
+      <div class="field">
+        <span class="field__label">Ubicación</span>
+        <div class="evidence">
+          <button class="button button--ghost" type="button" id="capture-location">
+            Obtener ubicación
+          </button>
+          <span class="field__hint" id="location-status" role="status" aria-live="polite">
+            Necesaria para enviar el reporte.
+          </span>
+        </div>
+      </div>
+
+      <button class="button" type="submit" id="submit-report">Enviar reporte</button>
       <p class="status" id="form-status" role="status" aria-live="polite"></p>
     </form>
   `;
 }
 
-/** @param {HTMLLIElement | string} item */
-function listItemMarkup(draft) {
+function statusLabel(incident) {
+  if (incident.pendingSync) return 'Pendiente de envío';
+  return (
+    {
+      pending: 'Pendiente',
+      synced: 'Recibido',
+      resolved: 'Resuelto',
+    }[incident.status] ?? 'Recibido'
+  );
+}
+
+function listItemMarkup(incident) {
   return `
     <li class="list__item">
       <div class="list__head">
-        <span class="list__title">${escapeHtml(draft.title)}</span>
-        <span class="tag">Borrador local</span>
+        <span class="list__title">${escapeHtml(incident.title)}</span>
+        <span class="tag">${statusLabel(incident)}</span>
       </div>
       ${
-        draft.description
-          ? `<p class="list__meta">${escapeHtml(draft.description)}</p>`
+        incident.description
+          ? `<p class="list__meta">${escapeHtml(incident.description)}</p>`
           : ''
       }
-      <p class="list__meta">${formatDate(draft.createdAt)}</p>
+      <p class="list__meta">${formatDate(incident.created_at)}</p>
     </li>
   `;
 }
 
-/** @param {string | null} tone */
-function setStatus(message, tone = null) {
-  const element = document.getElementById('form-status');
+function setElementStatus(id, message, tone = '') {
+  const element = document.getElementById(id);
   if (!element) return;
   element.textContent = message;
   if (tone) element.dataset.tone = tone;
   else delete element.dataset.tone;
 }
 
-function updateCounter() {
-  const counter = document.getElementById(COUNTER_ID);
-  if (!counter) return;
-  const total = drafts.length;
-  counter.textContent = `${total} ${total === 1 ? 'reporte' : 'reportes'} en el dispositivo`;
+export function setApiStatus(message, tone = '') {
+  setElementStatus(API_STATUS_ID, message, tone);
 }
 
-/** Vuelve a pintar la lista completa. */
-export function renderList() {
+export function renderList(incidents = []) {
   const list = document.getElementById(LIST_ID);
   if (!list) return;
 
-  if (drafts.length === 0) {
+  if (incidents.length === 0) {
     list.innerHTML = '<li class="list__empty">Aún no hay reportes en este dispositivo.</li>';
   } else {
-    list.innerHTML = drafts.map(listItemMarkup).join('');
+    list.innerHTML = incidents.map(listItemMarkup).join('');
   }
 
-  updateCounter();
+  const pending = incidents.filter((incident) => incident.pendingSync).length;
+  const counter = document.getElementById(COUNTER_ID);
+  if (counter) {
+    counter.textContent = `${pending} ${pending === 1 ? 'reporte pendiente' : 'reportes pendientes'} de sincronizar`;
+  }
 }
 
-/** Añade un borrador y refresca la lista. */
-export function addDraft({ title, description }) {
-  const draft = {
-    id: crypto.randomUUID(),
-    title: title.trim(),
-    description: description.trim(),
-    createdAt: new Date().toISOString(),
-  };
+function captureLocation(button, coordinatesRef) {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Este navegador no permite obtener la ubicación.'));
+      return;
+    }
 
-  drafts = [draft, ...drafts];
-  eventBus.emit(EVENTS.DRAFT_CHANGED, { draft, total: drafts.length });
-  renderList();
-  return draft;
+    button.disabled = true;
+    setElementStatus('location-status', 'Obteniendo ubicación…');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        coordinatesRef.value = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setElementStatus('location-status', 'Ubicación lista.', 'ok');
+        button.disabled = false;
+        resolve();
+      },
+      (error) => {
+        const messages = {
+          1: 'Permite el acceso a la ubicación para enviar el reporte.',
+          2: 'No se pudo determinar la ubicación. Inténtalo de nuevo.',
+          3: 'La ubicación tardó demasiado. Inténtalo de nuevo.',
+        };
+        const message = messages[error.code] ?? 'No se pudo obtener la ubicación.';
+        setElementStatus('location-status', message, 'error');
+        button.disabled = false;
+        reject(new Error(message));
+      },
+      { enableHighAccuracy: true, maximumAge: 60_000, timeout: 15_000 },
+    );
+  });
 }
 
-/** Devuelve una copia de los borradores actuales (solo lectura). */
-export function getDrafts() {
-  return [...drafts];
-}
+function bindForm(form, onSubmit) {
+  const locationButton = form.querySelector('#capture-location');
+  const submitButton = form.querySelector('#submit-report');
+  const coordinatesRef = { value: null };
 
-/** @param {HTMLFormElement} form */
-function bindForm(form) {
-  form.addEventListener('submit', (event) => {
+  locationButton.addEventListener('click', () => {
+    captureLocation(locationButton, coordinatesRef).catch(() => {});
+  });
+
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const title = form.elements.title.value;
-    const description = form.elements.description.value;
-
-    if (title.trim().length < 3) {
-      setStatus('El título necesita al menos 3 caracteres.', 'error');
+    const title = form.elements.title.value.trim();
+    const description = form.elements.description.value.trim();
+    if (title.length < 3) {
+      setElementStatus('form-status', 'El título necesita al menos 3 caracteres.', 'error');
       form.elements.title.focus();
       return;
     }
 
-    const draft = addDraft({ title, description });
-    form.reset();
-    setStatus(`«${draft.title}» quedó en el dispositivo.`, 'ok');
+    if (!coordinatesRef.value) {
+      setElementStatus('form-status', 'Obtén la ubicación antes de enviar el reporte.', 'error');
+      return;
+    }
+
+    submitButton.disabled = true;
+    setElementStatus('form-status', 'Guardando reporte…');
+    try {
+      const result = await onSubmit({
+        title,
+        description,
+        ...coordinatesRef.value,
+      });
+
+      form.reset();
+      coordinatesRef.value = null;
+      setElementStatus('location-status', 'Necesaria para enviar el reporte.');
+
+      if (result.synced) {
+        setElementStatus('form-status', `«${title}» se envió a la API.`, 'ok');
+      } else if (result.error) {
+        setElementStatus(
+          'form-status',
+          `«${title}» quedó guardado en el dispositivo; no se pudo sincronizar: ${result.error.message}`,
+          'error',
+        );
+      } else {
+        setElementStatus(
+          'form-status',
+          `«${title}» quedó guardado en el dispositivo y se enviará al recuperar conexión.`,
+          'ok',
+        );
+      }
+    } catch (error) {
+      setElementStatus('form-status', error.message, 'error');
+    } finally {
+      submitButton.disabled = false;
+    }
   });
 }
 
-/** Renderiza el formulario dentro del slot estático del shell. */
-export function renderForm() {
+export function renderForm(onSubmit) {
   const slot = document.getElementById(FORM_SLOT_ID);
   if (!slot) return;
 
   slot.innerHTML = formMarkup();
   const form = slot.querySelector('form');
-  if (form) bindForm(form);
+  if (form) bindForm(form, onSubmit);
 }
 
-/** Punto de entrada: monta formulario y lista sobre el shell estático. */
-export function mountShell() {
-  renderForm();
+export function mountShell(onSubmit) {
+  renderForm(onSubmit);
   renderList();
 }
 
-export default { mountShell, renderForm, renderList, addDraft, getDrafts };
+export default { mountShell, renderForm, renderList, setApiStatus };

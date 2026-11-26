@@ -30,7 +30,7 @@ PWA (Vanilla JS + Vite)  →  API REST (Node + Express, Render)  →  PostgreSQL
 
 ```bash
 npm run install:all
-# Crea headless-backend/.env con las variables documentadas en docs/02 y docs/03
+# Copia headless-backend/.env.example a headless-backend/.env y configura DATABASE_URL
 
 npm run dev          # PWA en http://localhost:5173
 npm run dev:api      # API en http://localhost:3000
@@ -42,11 +42,13 @@ Requisitos: Node 20+, npm. Para el APK: JDK 17 y Android SDK.
 Para habilitar Push, configura `DATABASE_URL`, `ADMIN_API_KEY` y las claves
 `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` en `headless-backend/.env`. Genera un
 par VAPID con `npx web-push generate-vapid-keys` desde `headless-backend/`.
-Si el frontend y la API tienen distintos orígenes, configura
-`VITE_API_BASE_URL` en `pwa-frontend/.env` con la URL base de la API (en modo
-desarrollo la PWA usa `http://localhost:3000` por defecto). En el dispositivo,
-activa los avisos desde **Avisos de tus reportes**; se requiere HTTPS (localhost
-sirve para pruebas). La llave privada VAPID nunca debe ponerse en el frontend.
+En desarrollo, la PWA usa `http://localhost:3000` por defecto. En producción,
+configura `VITE_API_BASE_URL` en Vercel con la URL HTTPS pública de Render y
+vuelve a desplegar el frontend. Añade el origen de Vercel a `ALLOWED_ORIGINS`
+en Render. Los reportes se guardan primero en IndexedDB y se sincronizan con la
+API al recuperar conexión. En el dispositivo, activa los avisos desde **Avisos
+de tus reportes**; se requiere HTTPS (localhost sirve para pruebas). La llave
+privada VAPID y `DATABASE_URL` nunca deben ponerse en el frontend.
 
 ## Estructura
 
