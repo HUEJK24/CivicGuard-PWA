@@ -152,10 +152,22 @@ npx vercel --prod
 
 ### API en Render
 
-Con el blueprint `render.yaml` del repositorio:
-**Render → New → Blueprint → seleccionar el repo**. Luego capturar
-`DATABASE_URL`, `ADMIN_API_KEY` y `ALLOWED_ORIGINS` en el panel
-(están marcadas como `sync: false`).
+El backend ya está implementado en `headless-backend/` y se despliega con el
+blueprint `render.yaml`:
+
+1. En Render, crea un **Blueprint** y selecciona la rama que contiene estos
+   cambios (por ejemplo, `feature/deploy-api`).
+2. En el servicio `civicguard-api`, configura `DATABASE_URL` con la cadena
+   vigente de Neon y `ALLOWED_ORIGINS` con el origen exacto de Vercel.
+3. Despliega y comprueba `/health`: `data.dependencies.database.status` debe
+   ser `up`. `GET /api/incidents` debe responder HTTP 200.
+4. Aplica `headless-backend/db/schema.sql` en Neon (o ejecuta
+   `npm run db:apply` desde `headless-backend/` con `DATABASE_URL` configurada).
+
+En Vercel, configura `VITE_API_BASE_URL` con la URL pública que Render asignó
+al servicio y vuelve a desplegar el frontend. `pwa-frontend/.env.example`
+muestra el formato local de esa variable. No versiones `.env` con valores
+reales.
 
 ### Base de datos en Neon
 
