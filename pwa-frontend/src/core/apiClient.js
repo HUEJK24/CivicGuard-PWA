@@ -60,8 +60,15 @@ export async function apiRequest(path, options = {}) {
 
     return result.data;
   } catch (error) {
+    console.error('[CivicGuard API] Falló una solicitud.', {
+      url: `${apiBaseUrl}${path}`,
+      browserOnline: navigator.onLine,
+      status: error.status ?? null,
+      code: error.code ?? null,
+      reason: error.message,
+    });
     const message = friendlyMessage(path, error);
-    const wrapped = new Error(message);
+    const wrapped = new Error(message, { cause: error });
     wrapped.code = error.code ?? null;
     wrapped.status = error.status ?? null;
     throw wrapped;
