@@ -3,47 +3,80 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>CivicGuard — Reportes de infraestructura urbana</title>
+    <title>CivicGuard — Reportes claros y seguros</title>
     <meta
       name="description"
-      content="Reporta baches, luminarias y fugas de agua con GPS y foto, incluso sin conexión."
+      content="Reporta incidencias con ubicación y fotografía, incluso sin conexión. Sencillo, privado y accesible."
     />
-    <meta name="theme-color" content="#0b3d91" />
+    <meta name="theme-color" content="#F0FDFA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="CivicGuard" />
 
     <!-- CSS crítico en línea (Application Shell inmutable) -->
     <style>
       :root {
-        --brand: #0b3d91;
-        --brand-strong: #082c6b;
-        --bg: #f4f6fb;
+        --primary: #0891b2;
+        --primary-strong: #0e7490;
+        --primary-soft: #ecfeff;
+        --on-primary: #04141a;
+        --accent: #16a34a;
+        --accent-strong: #15803d;
+        --on-accent: #04140a;
+        --success-soft: #dcfce7;
+        --success-strong: #166534;
+        --warning-soft: #fef3c7;
+        --warning-strong: #92400e;
+        --danger: #dc2626;
+        --danger-soft: #fee2e2;
+        --bg: #f0fdfa;
         --surface: #ffffff;
-        --text: #10182b;
-        --muted: #5a6478;
-        --border: #d9dfea;
-        --danger: #b3261e;
-        --radius: 14px;
-        --gap: 16px;
-        --shadow: 0 1px 2px rgb(16 24 43 / 8%), 0 6px 20px rgb(16 24 43 / 6%);
-        --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-          Arial, "Noto Sans", sans-serif;
+        --fg: #134e4a;
+        --muted: #475569;
+        --muted-strong: #334155;
+        --muted-bg: #f1f5f9;
+        --border: #ccfbf1;
+        --border-strong: #99f6e4;
+        --ring: #0891b2;
+        --ring-soft: rgb(8 145 178 / 22%);
+        --shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+        --radius: 16px;
+        --font-heading: "Figtree", "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         color-scheme: light dark;
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #0d1117;
-          --surface: #161b24;
-          --text: #eef2f8;
-          --muted: #a4aec0;
-          --border: #2a3240;
-          --shadow: none;
+          --primary: #22d3ee;
+          --primary-strong: #67e8f9;
+          --primary-soft: #083344;
+          --on-primary: #04141a;
+          --accent: #4ade80;
+          --accent-strong: #86efac;
+          --on-accent: #052e16;
+          --success-soft: #052e1b;
+          --success-strong: #86efac;
+          --warning-soft: #422006;
+          --warning-strong: #fde68a;
+          --danger: #f87171;
+          --danger-soft: #450a0a;
+          --bg: #0f172a;
+          --surface: #1e293b;
+          --fg: #f8fafc;
+          --muted: #cbd5e1;
+          --muted-strong: #e2e8f0;
+          --muted-bg: #273449;
+          --border: #334155;
+          --border-strong: #475569;
+          --ring: #67e8f9;
+          --ring-soft: rgb(103 232 249 / 28%);
+          --shadow-sm: none;
         }
       }
 
@@ -51,8 +84,28 @@
         box-sizing: border-box;
       }
 
+      [hidden] {
+        display: none !important;
+      }
+
       html {
         -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+        overscroll-behavior: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
 
       body {
@@ -61,29 +114,63 @@
         display: flex;
         flex-direction: column;
         background: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
+        color: var(--fg);
+        font-family: var(--font-body);
         font-size: 16px;
-        line-height: 1.5;
+        line-height: 1.55;
         padding: env(safe-area-inset-top) env(safe-area-inset-right)
           env(safe-area-inset-bottom) env(safe-area-inset-left);
       }
 
       h1,
-      h2 {
+      h2,
+      h3 {
         margin: 0;
-        line-height: 1.25;
+        font-family: var(--font-heading);
+        line-height: 1.22;
+        letter-spacing: -0.01em;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      h2 {
+        font-size: 1.125rem;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button,
+      a {
+        touch-action: manipulation;
+      }
+
+      button {
+        user-select: none;
       }
 
       .skip-link {
         position: absolute;
         left: -9999px;
         top: 0;
-        background: var(--surface);
-        color: var(--text);
+        z-index: 20;
         padding: 12px 16px;
-        border-radius: 0 0 var(--radius) 0;
-        z-index: 10;
+        background: var(--surface);
+        color: var(--primary-strong);
+        border: 1px solid var(--border-strong);
+        border-radius: 0 0 12px 0;
+        font-weight: 700;
       }
 
       .skip-link:focus {
@@ -91,68 +178,82 @@
       }
 
       :focus-visible {
-        outline: 3px solid var(--brand);
-        outline-offset: 2px;
+        outline: 3px solid var(--ring);
+        outline-offset: 3px;
       }
 
       .app-header {
-        background: var(--brand);
-        color: #fff;
-        padding: 20px 16px calc(20px + env(safe-area-inset-bottom) * 0);
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
       }
 
-      .brand {
+      .header__inner {
         display: flex;
         align-items: center;
         gap: 12px;
-        max-width: 720px;
+        max-width: 680px;
         margin: 0 auto;
+        padding: 14px 16px;
       }
 
       .brand__mark {
         flex: none;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
+        color: var(--primary-strong);
       }
 
       .brand__name {
-        font-size: 1.375rem;
-        letter-spacing: 0.01em;
+        display: block;
       }
 
       .brand__tagline {
-        max-width: 720px;
-        margin: 6px auto 0;
-        font-size: 0.9375rem;
-        color: #d8e2f8;
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      .header__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 36px;
+        margin-left: auto;
+        padding: 4px 10px;
+        background: var(--muted-bg);
+        color: var(--muted-strong);
+        border-radius: 999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .header__badge svg {
+        width: 16px;
+        height: 16px;
+        color: var(--success-strong);
       }
 
       .banner {
         margin: 0;
         padding: 12px 16px;
-        background: #fff4d6;
-        color: #4a3a05;
-        border-bottom: 1px solid #e8d59a;
+        background: var(--warning-soft);
+        color: var(--warning-strong);
+        border-bottom: 1px solid var(--border-strong);
         font-size: 0.9375rem;
+        font-weight: 600;
         text-align: center;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .banner {
-          background: #3a3011;
-          color: #ffe9ad;
-          border-bottom-color: #5a4a17;
-        }
       }
 
       .app-main {
         flex: 1;
         width: 100%;
-        max-width: 720px;
+        max-width: 680px;
         margin: 0 auto;
-        padding: var(--gap);
+        padding: 16px 16px calc(92px + env(safe-area-inset-bottom));
         display: grid;
-        gap: var(--gap);
+        gap: 16px;
         align-content: start;
       }
 
@@ -160,18 +261,92 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: var(--gap);
+        box-shadow: var(--shadow-sm);
+        padding: 20px 16px;
       }
 
-      .card__title {
-        font-size: 1.0625rem;
-        margin-bottom: 12px;
+      .card--intro {
+        background: var(--primary-soft);
+        border-color: var(--border-strong);
+      }
+
+      .card__header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .card__icon {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 40px;
+        height: 40px;
+        background: var(--muted-bg);
+        color: var(--primary-strong);
+        border-radius: 12px;
+      }
+
+      .card--intro .card__icon {
+        background: var(--surface);
+      }
+
+      .card__icon svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .card__subtitle {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .step {
+        display: grid;
+        gap: 4px;
+        padding: 12px 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .step__number {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        background: var(--primary-soft);
+        color: var(--primary-strong);
+        border-radius: 50%;
+        font-family: var(--font-heading);
+        font-size: 0.8125rem;
+        font-weight: 700;
+      }
+
+      .step strong {
+        font-size: 0.875rem;
+      }
+
+      .step span:last-child {
+        color: var(--muted);
+        font-size: 0.875rem;
+        line-height: 1.35;
       }
 
       .form {
         display: grid;
-        gap: 14px;
+        gap: 18px;
       }
 
       .field {
@@ -180,163 +355,390 @@
       }
 
       .field__label {
+        font-weight: 700;
+      }
+
+      .field__hint {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      .field__error {
+        color: var(--danger);
         font-size: 0.875rem;
         font-weight: 600;
       }
 
-      .field__hint {
-        font-size: 0.8125rem;
-        color: var(--muted);
-      }
-
       input[type="text"],
-      input[type="search"],
       textarea {
         width: 100%;
-        min-height: 48px;
+        min-height: 52px;
         padding: 12px 14px;
-        font: inherit;
-        color: inherit;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
+        background: var(--surface);
+        color: var(--fg);
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        font-size: 16px;
+        transition: border-color 200ms ease, box-shadow 200ms ease;
       }
 
       textarea {
-        min-height: 96px;
+        min-height: 104px;
         resize: vertical;
       }
 
-      .button {
-        min-height: 48px;
-        padding: 12px 20px;
-        font: inherit;
-        font-weight: 600;
-        color: #fff;
-        background: var(--brand);
-        border: 0;
-        border-radius: 10px;
-        cursor: pointer;
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--muted);
+        opacity: 0.85;
       }
 
-      .button:active {
-        background: var(--brand-strong);
-        transform: scale(0.99);
+      input:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--ring-soft);
       }
 
-      .button[disabled] {
-        opacity: 0.55;
-        cursor: not-allowed;
+      input[aria-invalid="true"],
+      textarea[aria-invalid="true"] {
+        border-color: var(--danger);
+        background: var(--danger-soft);
       }
 
-      .button--ghost {
-        color: var(--brand);
-        background: transparent;
-        border: 1px solid var(--brand);
+      .counter {
+        color: var(--muted);
+        font-size: 0.875rem;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .error-summary {
+        padding: 12px 14px;
+        background: var(--danger-soft);
+        color: var(--danger);
+        border-radius: 12px;
+        font-size: 0.9375rem;
+      }
+
+      .error-summary ul {
+        margin: 6px 0 0;
+        padding-left: 20px;
       }
 
       .evidence {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
         align-items: center;
-      }
-
-      .list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
         gap: 10px;
       }
 
-      .list__empty {
+      .location-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 28px;
         color: var(--muted);
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
       }
 
-      .slot {
-        display: grid;
-        gap: 14px;
-        min-height: 310px;
-      }
-
-      .list__item {
-        display: grid;
-        gap: 6px;
-        padding: 12px 14px;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-      }
-
-      .list__head {
-        display: flex;
-        gap: 10px;
-        align-items: start;
-        justify-content: space-between;
-      }
-
-      .list__title {
-        font-weight: 600;
-      }
-
-      .list__meta {
-        margin: 0;
-        font-size: 0.8125rem;
-        color: var(--muted);
-      }
-
-      .tag {
+      .location-status::before,
+      .status::before,
+      .tag::before {
+        content: "";
         flex: none;
-        padding: 3px 10px;
-        border-radius: 999px;
-        background: #fff4d6;
-        color: #4a3a05;
-        font-size: 0.75rem;
-        font-weight: 600;
-        white-space: nowrap;
+        width: 8px;
+        height: 8px;
+        background: currentColor;
+        border-radius: 50%;
       }
 
-      @media (prefers-color-scheme: dark) {
-        .tag {
-          background: #3a3011;
-          color: #ffe9ad;
+      .location-status[data-tone="ok"] {
+        color: var(--success-strong);
+        font-weight: 600;
+      }
+
+      .location-status[data-tone="error"] {
+        color: var(--danger);
+        font-weight: 600;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 160ms ease, background-color 200ms ease,
+          border-color 200ms ease, color 200ms ease;
+      }
+
+      .button svg {
+        width: 20px;
+        height: 20px;
+        flex: none;
+      }
+
+      .button:active {
+        transform: scale(0.985);
+      }
+
+      .button[disabled] {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .button--primary {
+        background: var(--accent);
+        color: var(--on-accent);
+      }
+
+      .button--secondary {
+        background: var(--surface);
+        color: var(--primary-strong);
+        border-color: var(--primary);
+      }
+
+      .button--full {
+        width: 100%;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .button--primary:hover {
+          background: var(--accent-strong);
+        }
+
+        .button--secondary:hover {
+          background: var(--primary-soft);
+        }
+
+        .bottom-nav__link:hover {
+          color: var(--primary-strong);
         }
       }
 
       .status {
-        margin: 0;
-        min-height: 1.25rem;
-        font-size: 0.875rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        min-height: 24px;
         color: var(--muted);
+        font-size: 0.9375rem;
       }
 
-      #push-status {
-        min-height: 2.5rem;
+      .status::before {
+        margin-top: 8px;
+      }
+
+      .status[data-tone="ok"] {
+        color: var(--success-strong);
+        font-weight: 600;
       }
 
       .status[data-tone="error"] {
         color: var(--danger);
+        font-weight: 600;
       }
 
-      .status[data-tone="ok"] {
-        color: var(--brand);
+      #push-status {
+        margin-top: 12px;
+      }
+
+      .summary-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px 16px;
+        margin-bottom: 14px;
+        padding: 10px 12px;
+        background: var(--muted-bg);
+        border-radius: 12px;
+        color: var(--muted-strong);
+        font-size: 0.9375rem;
+      }
+
+      .summary-row strong {
+        color: var(--fg);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+        margin-bottom: 14px;
+        padding: 4px;
+        background: var(--muted-bg);
+        border-radius: 14px;
+      }
+
+      .filter-chip {
+        min-height: 44px;
+        padding: 6px 8px;
+        background: transparent;
+        border: 0;
+        border-radius: 10px;
+        color: var(--muted-strong);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 160ms ease, background-color 200ms ease, color 200ms ease;
+      }
+
+      .filter-chip[aria-pressed="true"] {
+        background: var(--surface);
+        color: var(--primary-strong);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .filter-chip:active {
+        transform: scale(0.97);
+      }
+
+      .list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list__item {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .list__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .list__title {
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      .list__meta {
+        color: var(--muted);
+        font-size: 0.875rem;
+        overflow-wrap: anywhere;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        padding: 4px 10px;
+        background: var(--muted-bg);
+        color: var(--muted-strong);
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .tag::before {
+        width: 7px;
+        height: 7px;
+      }
+
+      .tag[data-state="pending"] {
+        background: var(--warning-soft);
+        color: var(--warning-strong);
+      }
+
+      .tag[data-state="synced"] {
+        background: var(--success-soft);
+        color: var(--success-strong);
+      }
+
+      .tag[data-state="resolved"] {
+        background: var(--primary-soft);
+        color: var(--primary-strong);
+      }
+
+      .list__empty {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        padding: 28px 14px;
+        color: var(--muted);
+        border: 1px dashed var(--border-strong);
+        border-radius: 14px;
+        text-align: center;
+      }
+
+      .list__empty svg {
+        width: 32px;
+        height: 32px;
+        color: var(--primary-strong);
+      }
+
+      .list__empty strong {
+        color: var(--fg);
+      }
+
+      .list__empty span {
+        font-size: 0.9375rem;
+      }
+
+      .bottom-nav {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .bottom-nav__inner {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-width: 680px;
+        margin: 0 auto;
+      }
+
+      .bottom-nav__link {
+        display: grid;
+        place-items: center;
+        gap: 2px;
+        min-height: 58px;
+        padding: 6px 4px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 160ms ease, color 200ms ease;
+      }
+
+      .bottom-nav__link svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .bottom-nav__link:active {
+        color: var(--primary-strong);
+        transform: scale(0.97);
       }
 
       .app-footer {
         padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
-        text-align: center;
         color: var(--muted);
-        font-size: 0.8125rem;
-      }
-
-      .noscript {
-        margin: var(--gap);
-        padding: 12px 16px;
-        background: #fdecea;
-        color: var(--danger);
-        border-radius: 10px;
+        font-size: 0.875rem;
+        text-align: center;
       }
     </style>
   </head>
@@ -344,60 +746,134 @@
     <a class="skip-link" href="#main">Saltar al contenido</a>
 
     <header class="app-header">
-      <div class="brand">
-        <svg
-          class="brand__mark"
-          viewBox="0 0 48 48"
-          role="img"
-          aria-label="CivicGuard"
-          focusable="false"
-        >
-          <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="4" />
-          <circle cx="24" cy="24" r="6" fill="#fff" />
+      <div class="header__inner">
+        <svg class="brand__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="CivicGuard" focusable="false">
+          <path d="M24 4 6 11v9c0 11 7.4 18.4 18 22 10.6-3.6 18-11 18-22v-9L24 4Z" />
+          <path d="M24 15v14M17 22h14" />
         </svg>
-        <h1 class="brand__name">CivicGuard</h1>
+        <div>
+          <h1 class="brand__name">CivicGuard</h1>
+          <p class="brand__tagline">Reportes claros y seguros, paso a paso.</p>
+        </div>
+        <span class="header__badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 3 4 6v5c0 5 3.4 8.8 8 10 4.6-1.2 8-5 8-10V6l-8-3Z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          Privado
+        </span>
       </div>
-      <p class="brand__tagline">Reporta incidencias urbanas, con o sin conexión.</p>
     </header>
 
-    <!-- Estado de red: parte del shell estático; lo muestra u oculta
-         src/ui/offlineBanner.js reaccionando al EventBus -->
     <p id="offline-banner" class="banner" role="status" aria-live="polite" hidden>
-      Sin conexión — tus reportes se guardan en el dispositivo.
+      Sin conexión. Tu reporte se guarda en este dispositivo y se enviará después.
     </p>
 
     <main id="main" class="app-main">
       <noscript>
-        <p class="noscript">
-          CivicGuard necesita JavaScript para funcionar sin conexión.
-        </p>
+        <p class="error-summary">CivicGuard necesita JavaScript para guardar reportes sin conexión.</p>
       </noscript>
 
-      <!-- Renderizado mixto: el marcado de abajo es el placeholder estático que
-           ve el usuario antes de que cargue el JS; el formulario real lo
-           reemplaza src/ui/shellComponents.js (CSR). -->
-      <section class="card" aria-labelledby="report-title">
-        <h2 class="card__title" id="report-title">Nuevo reporte</h2>
+      <section class="card card--intro" aria-labelledby="intro-title">
+        <div class="card__header">
+          <span class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="4" width="14" height="18" rx="2" />
+              <path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h3" />
+            </svg>
+          </span>
+          <div>
+            <h2 id="intro-title">Así de fácil</h2>
+            <p class="card__subtitle">Tres pasos. Sin prisas y sin complicaciones.</p>
+          </div>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="step__number">1</span>
+            <strong>Cuéntalo</strong>
+            <span>Un título corto es suficiente.</span>
+          </li>
+          <li class="step">
+            <span class="step__number">2</span>
+            <strong>Ubícalo</strong>
+            <span>Toca un botón para obtener la ubicación.</span>
+          </li>
+          <li class="step">
+            <span class="step__number">3</span>
+            <strong>Guárdalo</strong>
+            <span>Lo enviamos cuando haya conexión.</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="card" id="section-report" aria-labelledby="report-title">
+        <div class="card__header">
+          <span class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </span>
+          <div>
+            <h2 id="report-title">Nuevo reporte</h2>
+            <p class="card__subtitle">Escribe solo lo que sea necesario.</p>
+          </div>
+        </div>
         <div class="slot" id="report-form-slot">
           <p class="field__hint">Cargando formulario…</p>
         </div>
       </section>
 
-      <section class="card" aria-labelledby="push-title">
-        <h2 class="card__title" id="push-title">Avisos de tus reportes</h2>
-        <p class="field__hint">
-          Recibe una notificación cuando recibamos o resolvamos uno de tus reportes.
-        </p>
-        <button class="button button--ghost" type="button" id="enable-push">
-          Activar notificaciones
+      <section class="card" id="section-push" aria-labelledby="push-title">
+        <div class="card__header">
+          <span class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+          </span>
+          <div>
+            <h2 id="push-title">Avisos</h2>
+            <p class="card__subtitle">Te avisamos cuando un reporte cambie de estado. Es opcional.</p>
+          </div>
+        </div>
+        <button class="button button--secondary" type="button" id="enable-push">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+          </svg>
+          Activar avisos
         </button>
         <p class="status" id="push-status" role="status" aria-live="polite"></p>
       </section>
 
-      <section class="card" aria-labelledby="list-title">
-        <h2 class="card__title" id="list-title">Reportes</h2>
+      <section class="card" id="section-list" aria-labelledby="list-title">
+        <div class="card__header">
+          <span class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6h13M8 12h13M8 18h13" />
+              <path d="M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
+          </span>
+          <div>
+            <h2 id="list-title">Tus reportes</h2>
+            <p class="card__subtitle">Todo lo que guardaste en este dispositivo.</p>
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <span>Guardados: <strong id="stat-total">0</strong></span>
+          <span>Pendientes: <strong id="stat-pending">0</strong></span>
+        </div>
+
+        <div class="filters" id="report-filters" role="group" aria-label="Filtrar reportes">
+          <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">Todos</button>
+          <button class="filter-chip" type="button" data-filter="pending" aria-pressed="false">Pendientes</button>
+          <button class="filter-chip" type="button" data-filter="synced" aria-pressed="false">Enviados</button>
+        </div>
+
         <p class="status" id="api-status" role="status" aria-live="polite">
-          Comprobando conexión con la API…
+          Revisando tus reportes…
         </p>
         <ul class="list" id="incident-list" aria-live="polite">
           <li class="list__empty">Aún no hay reportes en este dispositivo.</li>
@@ -405,8 +881,36 @@
       </section>
     </main>
 
+    <nav class="bottom-nav" aria-label="Secciones principales">
+      <div class="bottom-nav__inner">
+        <a class="bottom-nav__link" href="#section-report">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+          Reportar
+        </a>
+        <a class="bottom-nav__link" href="#section-push">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+          </svg>
+          Avisos
+        </a>
+        <a class="bottom-nav__link" href="#section-list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 6h13M8 12h13M8 18h13" />
+            <path d="M3 6h.01M3 12h.01M3 18h.01" />
+          </svg>
+          Reportes
+        </a>
+      </div>
+    </nav>
+
     <footer class="app-footer">
-      <span id="pending-counter">0 pendientes de sincronizar</span>
+      <span id="pending-counter">0 reportes pendientes de sincronizar</span>
+      <br />
+      Tus datos se guardan en este dispositivo.
     </footer>
 
     <script type="module" src="/src/app.js"></script>

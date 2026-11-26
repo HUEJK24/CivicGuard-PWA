@@ -31,13 +31,13 @@ async function enablePush(button) {
         ? 'granted'
         : await Notification.requestPermission();
     if (permission !== 'granted') {
-      setStatus('No se concedió permiso para enviar notificaciones.');
+      setStatus('No diste permiso para los avisos. Puedes activarlos cuando quieras.', 'error');
       return;
     }
 
     const registration = swRegistrationManager.registration;
     if (!registration) {
-      throw new Error('El Service Worker no está activo. Prueba la versión publicada o la vista previa.');
+      throw new Error('Los avisos necesitan la versión publicada de la página.');
     }
 
     const { publicKey } = await apiRequest('/api/vapid-public-key');
@@ -56,10 +56,10 @@ async function enablePush(button) {
       body: JSON.stringify({ deviceId, subscription: subscription.toJSON() }),
     });
 
-    setStatus('Notificaciones activadas. Te avisaremos cuando cambie el estado de tus reportes.', 'ok');
+    setStatus('Avisos activados. Te avisaremos cuando cambie un reporte.', 'ok');
   } catch (error) {
-    console.error('[CivicGuard] No se pudieron activar las notificaciones push:', error);
-    setStatus(error.message || 'No se pudieron activar las notificaciones.', 'error');
+    console.error('[CivicGuard] No se pudieron activar los avisos:', error);
+    setStatus(error.message || 'No pudimos activar los avisos. Puedes reportar igual.', 'error');
   } finally {
     button.disabled = false;
   }
@@ -76,14 +76,14 @@ export function mountPushNotifications() {
     !('Notification' in globalThis)
   ) {
     button.hidden = true;
-    setStatus('Este navegador o contexto no admite notificaciones push.');
+    setStatus('Este navegador no admite avisos. Puedes reportar sin problema.');
     return;
   }
 
   if (Notification.permission === 'granted') {
-    setStatus('Puedes activar las notificaciones para este dispositivo.');
+    setStatus('Puedes activar los avisos para este dispositivo.');
   } else if (Notification.permission === 'denied') {
-    setStatus('Las notificaciones están bloqueadas en los ajustes del navegador.');
+    setStatus('Los avisos están bloqueados en el navegador. Puedes reportar igual.', 'error');
   }
 
   button.addEventListener('click', () => enablePush(button));

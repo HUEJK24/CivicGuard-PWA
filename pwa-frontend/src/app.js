@@ -31,18 +31,18 @@ async function bootstrap() {
   } catch (error) {
     console.error('[CivicGuard] No se pudo abrir IndexedDB', error);
     eventBus.emit(EVENTS.APP_ERROR, { error });
-    setApiStatus(`No se pudo abrir el almacenamiento local: ${error.message}`, 'error');
+    setApiStatus(`No se pudo abrir el almacenamiento de este dispositivo: ${error.message}`, 'error');
   }
 
   eventBus.on(EVENTS.ONLINE, () => {
-    setApiStatus('Conexión restablecida; sincronizando reportes…');
+    setApiStatus('Conexión restablecida. Actualizando reportes…');
     refreshReportList().catch((error) => {
       console.error('[CivicGuard] No se pudieron sincronizar los reportes:', error);
-      setApiStatus(`No se pudieron sincronizar los reportes: ${error.message}`, 'error');
+      setApiStatus(`No pudimos actualizar los reportes: ${error.message}`, 'error');
     });
   });
   eventBus.on(EVENTS.OFFLINE, () => {
-    setApiStatus('Sin conexión; los reportes nuevos se guardarán en este dispositivo.');
+    setApiStatus('Sin conexión. Los reportes nuevos se guardan en este dispositivo.');
   });
 
   await registerServiceWorker(environment);
@@ -53,11 +53,11 @@ async function submitIncident(report) {
   const result = await createIncident(report);
   renderList(result.incidents);
   if (result.synced) {
-    setApiStatus('API conectada; reporte sincronizado.', 'ok');
+    setApiStatus('Tu reporte se envió correctamente.', 'ok');
   } else if (result.error) {
-    setApiStatus(`Reporte pendiente: ${result.error.message}`, 'error');
+    setApiStatus(`Reporte guardado. No pudimos enviarlo: ${result.error.message}`, 'error');
   } else {
-    setApiStatus('Sin conexión; el reporte se enviará al reconectar.');
+    setApiStatus('Reporte guardado. Se enviará al recuperar la conexión.');
   }
   return result;
 }
@@ -66,12 +66,15 @@ async function refreshReportList() {
   const result = await refreshIncidents();
   renderList(result.incidents);
   if (result.connected) {
-    setApiStatus('API conectada; reportes actualizados.', 'ok');
+    setApiStatus('Tus reportes están al día.', 'ok');
   } else if (result.error) {
     console.warn('[CivicGuard] No se pudo consultar la API:', result.error);
-    setApiStatus(`API no disponible; se muestran datos locales. ${result.error.message}`, 'error');
+    setApiStatus(
+      `No pudimos conectar con el servidor. Mostramos tus reportes guardados. ${result.error.message}`,
+      'error',
+    );
   } else {
-    setApiStatus('Sin conexión; se muestran los reportes guardados en este dispositivo.');
+    setApiStatus('Sin conexión. Mostramos los reportes guardados en este dispositivo.');
   }
 }
 
