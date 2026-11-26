@@ -258,6 +258,7 @@
       .slot {
         display: grid;
         gap: 14px;
+        min-height: 310px;
       }
 
       .list__item {
@@ -309,6 +310,10 @@
         min-height: 1.25rem;
         font-size: 0.875rem;
         color: var(--muted);
+      }
+
+      #push-status {
+        min-height: 2.5rem;
       }
 
       .status[data-tone="error"] {
@@ -376,6 +381,17 @@
         <div class="slot" id="report-form-slot">
           <p class="field__hint">Cargando formulario…</p>
         </div>
+      </section>
+
+      <section class="card" aria-labelledby="push-title">
+        <h2 class="card__title" id="push-title">Avisos de tus reportes</h2>
+        <p class="field__hint">
+          Recibe una notificación cuando recibamos o resolvamos uno de tus reportes.
+        </p>
+        <button class="button button--ghost" type="button" id="enable-push">
+          Activar notificaciones
+        </button>
+        <p class="status" id="push-status" role="status" aria-live="polite"></p>
       </section>
 
       <section class="card" aria-labelledby="list-title">

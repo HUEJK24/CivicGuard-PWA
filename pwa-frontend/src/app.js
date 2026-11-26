@@ -4,6 +4,7 @@ import swRegistrationManager from './core/swRegistrationManager.js';
 import indexedDbManager from './db/indexedDbManager.js';
 import { mountShell } from './ui/shellComponents.js';
 import offlineBanner from './ui/offlineBanner.js';
+import { mountPushNotifications } from './notifications/pushNotifications.js';
 
 /**
  * Punto de entrada de la PWA.
@@ -28,6 +29,7 @@ async function bootstrap() {
   }
 
   await registerServiceWorker(environment);
+  mountPushNotifications();
 }
 
 /** @param {ReturnType<typeof reportEnvironment>} environment */

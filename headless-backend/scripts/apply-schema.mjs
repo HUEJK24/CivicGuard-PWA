@@ -12,7 +12,7 @@ import { env } from '../src/config/env.js';
 
 async function main() {
   if (!env.databaseUrl) {
-    console.error('✖ DATABASE_URL no está configurada (copia .env.example a .env).');
+    console.error('✖ DATABASE_URL no está configurada en headless-backend/.env.');
     process.exit(1);
   }
 

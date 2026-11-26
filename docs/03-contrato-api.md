@@ -101,13 +101,14 @@ Un envío nuevo responde `201` con `data.created = true`.
 ## 4. `PATCH /api/incidents/:id/resolve` — Marcar como resuelta
 
 - **Autenticación:** `x-admin-key` (obligatoria).
-- **Sprint:** 3 (endpoint) y 4 (disparo de la push) · **Estado:** pendiente.
+- **Estado:** implementado.
 - Idempotente: si ya estaba resuelta, devuelve el registro sin error.
-- En Sprint 4 dispara la notificación push al `device_id` del reporte.
+- Al cambiar por primera vez a `resolved`, dispara una notificación push al
+  `device_id` del reporte. Repetir la petición no vuelve a notificar.
 
 ```jsonc
 // 200
-{ "ok": true, "data": { "id": 12, "status": "resolved", "resolved_at": "2026-11-20T18:00:00Z" }, "error": null }
+{ "ok": true, "data": { "incident": { "id": 12, "status": "resolved", "resolved_at": "2026-11-20T18:00:00Z" } }, "error": null }
 
 // 401 — falta la llave
 { "ok": false, "data": null, "error": { "code": "UNAUTHORIZED", "message": "Se requiere una x-admin-key válida.", "details": null } }
@@ -117,16 +118,25 @@ Un envío nuevo responde `201` con `data.created = true`.
 
 ## 5. `POST /api/subscribe` — Guardar suscripción Push
 
-- **Sprint:** 4 · **Estado:** pendiente.
+- **Estado:** implementado.
 - **Cuerpo:** `{ deviceId, subscription: { endpoint, keys: { p256dh, auth } } }`.
-- `endpoint` es **UNIQUE**: volver a suscribirse actualiza la fila.
+- Requiere VAPID configurado. `endpoint` debe ser HTTPS y es **UNIQUE**:
+  volver a suscribirse actualiza la fila.
+- Las suscripciones vencidas o revocadas (HTTP 404/410 del servicio push) se eliminan.
 
 ---
 
 ## 6. `GET /api/vapid-public-key` — Llave pública VAPID
 
-- **Sprint:** 4 · **Estado:** pendiente.
+- **Estado:** implementado.
 - **Respuesta:** `{ "ok": true, "data": { "publicKey": "BEl…" }, "error": null }`.
+- Responde `503 PUSH_NOT_CONFIGURED` si faltan las claves VAPID.
+
+La PWA solicita permiso solo cuando el usuario pulsa **Activar notificaciones**.
+El frontend puede apuntar a una API desplegada mediante `VITE_API_BASE_URL`;
+si no se define, usa `http://localhost:3000` en desarrollo y el mismo origen en
+producción. Las notificaciones se envían al crear un reporte y cuando se
+resuelve por primera vez.
 
 ---
 
@@ -140,10 +150,11 @@ Un envío nuevo responde `201` con `data.created = true`.
 | `NOT_FOUND` | 404 | Ruta inexistente |
 | `INCIDENT_NOT_FOUND` | 404 | `id` inexistente |
 | `ADMIN_KEY_NOT_CONFIGURED` | 503 | El servidor no tiene `ADMIN_API_KEY` |
+| `PUSH_NOT_CONFIGURED` | 503 | Faltan las claves VAPID del servidor |
 | `INTERNAL_ERROR` | 500 | Error no controlado (mensaje genérico en producción) |
 
 ## Variables de entorno del backend
 
 `DATABASE_URL`, `ALLOWED_ORIGINS`, `ADMIN_API_KEY`, `VAPID_PUBLIC_KEY`,
 `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `CLOUDINARY_URL`, `PORT`, `NODE_ENV`.
-Ver `headless-backend/.env.example`. **Ninguna se versiona.**
+Configúralas en `headless-backend/.env`; el archivo no se versiona.

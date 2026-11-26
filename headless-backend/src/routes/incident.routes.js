@@ -1,7 +1,12 @@
 import { Router } from 'express';
-import { createIncident, listIncidents } from '../controllers/incidentController.js';
+import {
+  createIncident,
+  listIncidents,
+  resolveIncident,
+} from '../controllers/incidentController.js';
 import { uploadPhoto } from '../middlewares/upload.js';
 import { validate } from '../middlewares/validate.js';
+import { adminAuth } from '../middlewares/adminAuth.js';
 
 const router = Router();
 
@@ -27,5 +32,6 @@ const createRules = {
 // Sprint 3: PATCH /:id/resolve con adminAuth.
 router.get('/', validate(listRules, 'query'), listIncidents);
 router.post('/', uploadPhoto, validate(createRules), createIncident);
+router.patch('/:id/resolve', adminAuth, resolveIncident);
 
 export default router;
