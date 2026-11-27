@@ -6,7 +6,7 @@
     <title>CivicGuard — Reportes claros y seguros</title>
     <meta
       name="description"
-      content="Reporta incidencias con ubicación y fotografía, incluso sin conexión. Sencillo, privado y accesible."
+      content="Reporta incidencias con ubicación, incluso sin conexión. Sencillo, privado y accesible."
     />
     <meta name="theme-color" content="#F0FDFA" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
@@ -29,10 +29,10 @@
         --accent-strong: #15803d;
         --on-accent: #04140a;
         --success-soft: #dcfce7;
-        --success-strong: #166534;
+        --success-strong: #14532d;
         --warning-soft: #fef3c7;
         --warning-strong: #92400e;
-        --danger: #dc2626;
+        --danger: #991b1b;
         --danger-soft: #fee2e2;
         --bg: #f0fdfa;
         --surface: #ffffff;
@@ -111,8 +111,6 @@
       body {
         margin: 0;
         min-height: 100dvh;
-        display: flex;
-        flex-direction: column;
         background: var(--bg);
         color: var(--fg);
         font-family: var(--font-body);
@@ -137,7 +135,7 @@
       }
 
       h2 {
-        font-size: 1.125rem;
+        font-size: 1.375rem;
         font-weight: 700;
       }
 
@@ -182,6 +180,22 @@
         outline-offset: 3px;
       }
 
+      .app-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 100dvh;
+      }
+
+      .app-content {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
       .app-header {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -191,7 +205,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        max-width: 680px;
+        max-width: 1120px;
         margin: 0 auto;
         padding: 14px 16px;
       }
@@ -249,15 +263,42 @@
       .app-main {
         flex: 1;
         width: 100%;
-        max-width: 680px;
+        max-width: 1120px;
         margin: 0 auto;
-        padding: 16px 16px calc(92px + env(safe-area-inset-bottom));
+        padding: 20px 16px calc(92px + env(safe-area-inset-bottom));
+      }
+
+      .view {
         display: grid;
         gap: 16px;
-        align-content: start;
+      }
+
+      .view__intro {
+        padding-top: 2px;
+      }
+
+      .eyebrow {
+        margin-bottom: 4px;
+        color: var(--primary-strong);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .view__intro p:last-child {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+
+      .grid-2 {
+        display: grid;
+        gap: 16px;
       }
 
       .card {
+        min-width: 0;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
@@ -297,10 +338,84 @@
         height: 22px;
       }
 
+      .card h3 {
+        font-size: 1.0625rem;
+      }
+
       .card__subtitle {
         margin-top: 4px;
         color: var(--muted);
         font-size: 0.9375rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 16px 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        text-align: center;
+      }
+
+      .stat-card__icon {
+        width: 22px;
+        height: 22px;
+        margin: 0 auto 6px;
+        color: var(--primary-strong);
+      }
+
+      .stat-card__value {
+        display: block;
+        font-family: var(--font-heading);
+        font-size: 1.75rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+      }
+
+      .stat-card__label {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 64px;
+        padding: 12px;
+        background: var(--bg);
+        color: var(--fg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+        transition: transform 160ms ease, background-color 200ms ease;
+      }
+
+      .quick-action svg {
+        flex: none;
+        width: 22px;
+        height: 22px;
+        color: var(--primary-strong);
+      }
+
+      .quick-action:active {
+        transform: scale(0.985);
       }
 
       .steps {
@@ -342,6 +457,133 @@
         color: var(--muted);
         font-size: 0.875rem;
         line-height: 1.35;
+      }
+
+      .recent {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .recent__item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .recent__dot {
+        flex: none;
+        width: 10px;
+        height: 10px;
+        margin-top: 6px;
+        background: var(--muted);
+        border-radius: 50%;
+      }
+
+      .recent__dot[data-state="pending"] {
+        background: var(--warning-strong);
+      }
+
+      .recent__dot[data-state="synced"] {
+        background: var(--success-strong);
+      }
+
+      .recent__dot[data-state="resolved"] {
+        background: var(--primary-strong);
+      }
+
+      .recent__body {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .recent__body strong {
+        font-size: 0.9375rem;
+        overflow-wrap: anywhere;
+      }
+
+      .recent__body span {
+        color: var(--muted);
+        font-size: 0.8125rem;
+      }
+
+      .recent__empty {
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+
+      .recent__empty button {
+        min-height: 44px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: var(--primary-soft);
+        color: var(--primary-strong);
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .tips {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+
+      .tips strong {
+        color: var(--fg);
+      }
+
+      .faq {
+        display: grid;
+        gap: 10px;
+      }
+
+      .faq details {
+        padding: 0 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .faq summary {
+        display: flex;
+        align-items: center;
+        min-height: 52px;
+        font-weight: 700;
+        cursor: pointer;
+        list-style: none;
+      }
+
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .faq summary::after {
+        content: "+";
+        margin-left: auto;
+        color: var(--primary-strong);
+        font-size: 1.25rem;
+      }
+
+      .faq details[open] summary::after {
+        content: "−";
+      }
+
+      .faq details p {
+        padding-bottom: 14px;
+        color: var(--muted);
+        font-size: 0.9375rem;
       }
 
       .form {
@@ -513,10 +755,12 @@
           background: var(--accent-strong);
         }
 
-        .button--secondary:hover {
+        .button--secondary:hover,
+        .quick-action:hover {
           background: var(--primary-soft);
         }
 
+        .sidebar__link:hover,
         .bottom-nav__link:hover {
           color: var(--primary-strong);
         }
@@ -705,8 +949,8 @@
 
       .bottom-nav__inner {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        max-width: 680px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        max-width: 1120px;
         margin: 0 auto;
       }
 
@@ -715,22 +959,27 @@
         place-items: center;
         gap: 2px;
         min-height: 58px;
-        padding: 6px 4px;
+        padding: 6px 2px;
+        background: transparent;
+        border: 0;
         color: var(--muted);
-        text-decoration: none;
-        font-size: 0.875rem;
+        font-family: inherit;
+        font-size: 0.8125rem;
         font-weight: 700;
         cursor: pointer;
         transition: transform 160ms ease, color 200ms ease;
       }
 
       .bottom-nav__link svg {
-        width: 22px;
-        height: 22px;
+        width: 21px;
+        height: 21px;
+      }
+
+      .bottom-nav__link[aria-current="page"] {
+        color: var(--primary-strong);
       }
 
       .bottom-nav__link:active {
-        color: var(--primary-strong);
         transform: scale(0.97);
       }
 
@@ -740,178 +989,421 @@
         font-size: 0.875rem;
         text-align: center;
       }
+
+      @media (min-width: 600px) {
+        .quick-actions {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (min-width: 900px) {
+        .app-shell {
+          grid-template-columns: 248px minmax(0, 1fr);
+        }
+
+        .sidebar {
+          position: sticky;
+          top: 0;
+          display: flex;
+          flex-direction: column;
+          height: 100dvh;
+          padding: 24px 16px;
+          background: var(--surface);
+          border-right: 1px solid var(--border);
+        }
+
+        .sidebar__brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 28px;
+          font-family: var(--font-heading);
+          font-weight: 700;
+        }
+
+        .sidebar__mark {
+          width: 36px;
+          height: 36px;
+          color: var(--primary-strong);
+        }
+
+        .sidebar__nav {
+          display: grid;
+          gap: 6px;
+        }
+
+        .sidebar__link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-height: 48px;
+          padding: 10px 12px;
+          background: transparent;
+          border: 0;
+          border-radius: 12px;
+          color: var(--muted-strong);
+          font-family: inherit;
+          font-size: 0.9375rem;
+          font-weight: 600;
+          text-align: left;
+          cursor: pointer;
+          transition: transform 160ms ease, background-color 200ms ease, color 200ms ease;
+        }
+
+        .sidebar__link svg {
+          flex: none;
+          width: 20px;
+          height: 20px;
+        }
+
+        .sidebar__link[aria-current="page"] {
+          background: var(--primary-soft);
+          color: var(--primary-strong);
+        }
+
+        .sidebar__link:active {
+          transform: scale(0.985);
+        }
+
+        .sidebar__foot {
+          margin-top: auto;
+          color: var(--muted);
+          font-size: 0.875rem;
+        }
+
+        .header__inner,
+        .app-main {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+
+        .app-main {
+          padding-bottom: 32px;
+        }
+
+        .grid-2 {
+          grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+          align-items: start;
+        }
+
+        .bottom-nav {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
 
-    <header class="app-header">
-      <div class="header__inner">
-        <svg class="brand__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="CivicGuard" focusable="false">
-          <path d="M24 4 6 11v9c0 11 7.4 18.4 18 22 10.6-3.6 18-11 18-22v-9L24 4Z" />
-          <path d="M24 15v14M17 22h14" />
-        </svg>
-        <div>
-          <h1 class="brand__name">CivicGuard</h1>
-          <p class="brand__tagline">Reportes claros y seguros, paso a paso.</p>
-        </div>
-        <span class="header__badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M12 3 4 6v5c0 5 3.4 8.8 8 10 4.6-1.2 8-5 8-10V6l-8-3Z" />
-            <path d="m9 12 2 2 4-4" />
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegación principal">
+        <div class="sidebar__brand">
+          <svg class="sidebar__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M24 4 6 11v9c0 11 7.4 18.4 18 22 10.6-3.6 18-11 18-22v-9L24 4Z" />
+            <path d="M24 15v14M17 22h14" />
           </svg>
-          Privado
-        </span>
-      </div>
-    </header>
+          CivicGuard
+        </div>
+        <nav class="sidebar__nav" aria-label="Secciones">
+          <button class="sidebar__link" type="button" data-view-target="resumen" aria-current="page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" /></svg>
+            Resumen
+          </button>
+          <button class="sidebar__link" type="button" data-view-target="reportar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+            Reportar
+          </button>
+          <button class="sidebar__link" type="button" data-view-target="reportes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M3 6h.01M3 12h.01M3 18h.01" /></svg>
+            Reportes
+          </button>
+          <button class="sidebar__link" type="button" data-view-target="avisos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+            Avisos
+          </button>
+          <button class="sidebar__link" type="button" data-view-target="ayuda">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-.8.6-1.5 1.2-1.5 2.5" /><path d="M12 17h.01" /></svg>
+            Ayuda
+          </button>
+        </nav>
+        <p class="sidebar__foot">Tus datos se guardan en este dispositivo.</p>
+      </aside>
 
-    <p id="offline-banner" class="banner" role="status" aria-live="polite" hidden>
-      Sin conexión. Tu reporte se guarda en este dispositivo y se enviará después.
-    </p>
-
-    <main id="main" class="app-main">
-      <noscript>
-        <p class="error-summary">CivicGuard necesita JavaScript para guardar reportes sin conexión.</p>
-      </noscript>
-
-      <section class="card card--intro" aria-labelledby="intro-title">
-        <div class="card__header">
-          <span class="card__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="4" width="14" height="18" rx="2" />
-              <path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h3" />
+      <div class="app-content">
+        <header class="app-header">
+          <div class="header__inner">
+            <svg class="brand__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="CivicGuard" focusable="false">
+              <path d="M24 4 6 11v9c0 11 7.4 18.4 18 22 10.6-3.6 18-11 18-22v-9L24 4Z" />
+              <path d="M24 15v14M17 22h14" />
             </svg>
-          </span>
-          <div>
-            <h2 id="intro-title">Así de fácil</h2>
-            <p class="card__subtitle">Tres pasos. Sin prisas y sin complicaciones.</p>
+            <div>
+              <h1 class="brand__name">CivicGuard</h1>
+              <p class="brand__tagline">Reportes claros y seguros, paso a paso.</p>
+            </div>
+            <span class="header__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M12 3 4 6v5c0 5 3.4 8.8 8 10 4.6-1.2 8-5 8-10V6l-8-3Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              Privado
+            </span>
           </div>
-        </div>
-        <ol class="steps">
-          <li class="step">
-            <span class="step__number">1</span>
-            <strong>Cuéntalo</strong>
-            <span>Un título corto es suficiente.</span>
-          </li>
-          <li class="step">
-            <span class="step__number">2</span>
-            <strong>Ubícalo</strong>
-            <span>Toca un botón para obtener la ubicación.</span>
-          </li>
-          <li class="step">
-            <span class="step__number">3</span>
-            <strong>Guárdalo</strong>
-            <span>Lo enviamos cuando haya conexión.</span>
-          </li>
-        </ol>
-      </section>
+        </header>
 
-      <section class="card" id="section-report" aria-labelledby="report-title">
-        <div class="card__header">
-          <span class="card__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-            </svg>
-          </span>
-          <div>
-            <h2 id="report-title">Nuevo reporte</h2>
-            <p class="card__subtitle">Escribe solo lo que sea necesario.</p>
-          </div>
-        </div>
-        <div class="slot" id="report-form-slot">
-          <p class="field__hint">Cargando formulario…</p>
-        </div>
-      </section>
-
-      <section class="card" id="section-push" aria-labelledby="push-title">
-        <div class="card__header">
-          <span class="card__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-          </span>
-          <div>
-            <h2 id="push-title">Avisos</h2>
-            <p class="card__subtitle">Te avisamos cuando un reporte cambie de estado. Es opcional.</p>
-          </div>
-        </div>
-        <button class="button button--secondary" type="button" id="enable-push">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-          </svg>
-          Activar avisos
-        </button>
-        <p class="status" id="push-status" role="status" aria-live="polite"></p>
-      </section>
-
-      <section class="card" id="section-list" aria-labelledby="list-title">
-        <div class="card__header">
-          <span class="card__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 6h13M8 12h13M8 18h13" />
-              <path d="M3 6h.01M3 12h.01M3 18h.01" />
-            </svg>
-          </span>
-          <div>
-            <h2 id="list-title">Tus reportes</h2>
-            <p class="card__subtitle">Todo lo que guardaste en este dispositivo.</p>
-          </div>
-        </div>
-
-        <div class="summary-row">
-          <span>Guardados: <strong id="stat-total">0</strong></span>
-          <span>Pendientes: <strong id="stat-pending">0</strong></span>
-        </div>
-
-        <div class="filters" id="report-filters" role="group" aria-label="Filtrar reportes">
-          <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">Todos</button>
-          <button class="filter-chip" type="button" data-filter="pending" aria-pressed="false">Pendientes</button>
-          <button class="filter-chip" type="button" data-filter="synced" aria-pressed="false">Enviados</button>
-        </div>
-
-        <p class="status" id="api-status" role="status" aria-live="polite">
-          Revisando tus reportes…
+        <p id="offline-banner" class="banner" role="status" aria-live="polite" hidden>
+          Sin conexión. Tu reporte se guarda en este dispositivo y se enviará después.
         </p>
-        <ul class="list" id="incident-list" aria-live="polite">
-          <li class="list__empty">Aún no hay reportes en este dispositivo.</li>
-        </ul>
-      </section>
-    </main>
+
+        <main id="main" class="app-main">
+          <noscript>
+            <p class="error-summary">CivicGuard necesita JavaScript para guardar reportes sin conexión.</p>
+          </noscript>
+
+          <!-- Resumen -->
+          <section class="view" id="view-resumen" data-view="resumen" aria-labelledby="resumen-title">
+            <div class="view__intro">
+              <p class="eyebrow">Inicio</p>
+              <h2 id="resumen-title" data-view-heading tabindex="-1">Todo en un solo lugar</h2>
+              <p>Revisa, reporta y recibe avisos sin salir de esta página.</p>
+            </div>
+
+            <div class="stats-grid" aria-label="Resumen de actividad">
+              <div class="stat-card">
+                <svg class="stat-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M3 6h.01M3 12h.01M3 18h.01" /></svg>
+                <span class="stat-card__value" id="dash-total">0</span>
+                <span class="stat-card__label">Guardados</span>
+              </div>
+              <div class="stat-card">
+                <svg class="stat-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="stat-card__value" id="dash-synced">0</span>
+                <span class="stat-card__label">Enviados</span>
+              </div>
+              <div class="stat-card">
+                <svg class="stat-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                <span class="stat-card__value" id="dash-pending">0</span>
+                <span class="stat-card__label">Pendientes</span>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <section class="card" aria-labelledby="quick-title">
+                <h3 id="quick-title">¿Qué quieres hacer?</h3>
+                <p class="card__subtitle">Elige una opción y la sección se abre aquí mismo.</p>
+                <div class="quick-actions" style="margin-top:14px">
+                  <button class="quick-action" type="button" data-view-target="reportar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                    Nuevo reporte
+                  </button>
+                  <button class="quick-action" type="button" data-view-target="reportes">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M3 6h.01M3 12h.01M3 18h.01" /></svg>
+                    Ver mis reportes
+                  </button>
+                  <button class="quick-action" type="button" data-view-target="avisos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                    Activar avisos
+                  </button>
+                </div>
+              </section>
+
+              <section class="card" aria-labelledby="recent-title">
+                <h3 id="recent-title">Actividad reciente</h3>
+                <p class="card__subtitle">Tus últimos tres reportes.</p>
+                <ul class="recent" id="recent-list" style="margin-top:14px">
+                  <li class="recent__empty">Todavía no hay reportes.</li>
+                </ul>
+              </section>
+            </div>
+
+            <section class="card card--intro" aria-labelledby="steps-title">
+              <div class="card__header">
+                <span class="card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2" /><path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h3" /></svg>
+                </span>
+                <div>
+                  <h3 id="steps-title">Así de fácil</h3>
+                  <p class="card__subtitle">Tres pasos. Sin prisas y sin complicaciones.</p>
+                </div>
+              </div>
+              <ol class="steps">
+                <li class="step"><span class="step__number">1</span><strong>Cuéntalo</strong><span>Un título corto es suficiente.</span></li>
+                <li class="step"><span class="step__number">2</span><strong>Ubícalo</strong><span>Toca un botón para obtener la ubicación.</span></li>
+                <li class="step"><span class="step__number">3</span><strong>Guárdalo</strong><span>Lo enviamos cuando haya conexión.</span></li>
+              </ol>
+            </section>
+
+            <p class="status" id="dash-status" role="status" aria-live="polite">Revisando tus reportes…</p>
+          </section>
+
+          <!-- Reportar -->
+          <section class="view" id="view-reportar" data-view="reportar" aria-labelledby="reportar-title" hidden>
+            <div class="view__intro">
+              <p class="eyebrow">Reportar</p>
+              <h2 id="reportar-title" data-view-heading tabindex="-1">Cuéntanos qué ocurrió</h2>
+              <p>Un título, la ubicación y listo. Puedes hacerlo sin conexión.</p>
+            </div>
+            <div class="grid-2">
+              <section class="card" aria-labelledby="form-title">
+                <h3 id="form-title">Nuevo reporte</h3>
+                <p class="card__subtitle">Escribe solo lo que sea necesario.</p>
+                <div class="slot" id="report-form-slot" style="margin-top:16px">
+                  <p class="field__hint">Cargando formulario…</p>
+                </div>
+              </section>
+              <aside class="card" aria-labelledby="tips-title">
+                <h3 id="tips-title">Antes de enviar</h3>
+                <ul class="tips" style="margin-top:12px">
+                  <li><strong>Sé concreto:</strong> “Bache en la entrada” funciona mejor que “algo roto”.</li>
+                  <li><strong>Una referencia ayuda:</strong> menciona una tienda, esquina o color del lugar.</li>
+                  <li><strong>No incluyas datos personales</strong> ni información de otras personas.</li>
+                  <li><strong>Sin conexión también funciona:</strong> guardamos el reporte y lo enviamos después.</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <!-- Reportes -->
+          <section class="view" id="view-reportes" data-view="reportes" aria-labelledby="reportes-title" hidden>
+            <div class="view__intro">
+              <p class="eyebrow">Reportes</p>
+              <h2 id="reportes-title" data-view-heading tabindex="-1">Tus reportes</h2>
+              <p>Todo lo que guardaste en este dispositivo, con su estado actual.</p>
+            </div>
+            <div class="grid-2">
+              <section class="card" aria-labelledby="list-title">
+                <h3 id="list-title">Historial</h3>
+                <div class="summary-row" style="margin-top:14px">
+                  <span>Guardados: <strong id="stat-total">0</strong></span>
+                  <span>Pendientes: <strong id="stat-pending">0</strong></span>
+                </div>
+                <div class="filters" id="report-filters" role="group" aria-label="Filtrar reportes">
+                  <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">Todos</button>
+                  <button class="filter-chip" type="button" data-filter="pending" aria-pressed="false">Pendientes</button>
+                  <button class="filter-chip" type="button" data-filter="synced" aria-pressed="false">Enviados</button>
+                </div>
+                <p class="status" id="api-status" role="status" aria-live="polite">Revisando tus reportes…</p>
+                <ul class="list" id="incident-list" aria-live="polite">
+                  <li class="list__empty">Aún no hay reportes en este dispositivo.</li>
+                </ul>
+              </section>
+              <aside class="card" aria-labelledby="sync-title">
+                <h3 id="sync-title">Estado de sincronización</h3>
+                <p class="card__subtitle" style="margin-top:8px">
+                  Los reportes se guardan primero en tu dispositivo. Cuando vuelva la conexión,
+                  CivicGuard los envía automáticamente.
+                </p>
+                <p class="status" id="pending-counter" style="margin-top:14px">0 reportes pendientes de sincronizar</p>
+              </aside>
+            </div>
+          </section>
+
+          <!-- Avisos -->
+          <section class="view" id="view-avisos" data-view="avisos" aria-labelledby="avisos-title" hidden>
+            <div class="view__intro">
+              <p class="eyebrow">Avisos</p>
+              <h2 id="avisos-title" data-view-heading tabindex="-1">Solo cuando haya novedades</h2>
+              <p>Recibir avisos es opcional. Tu reporte funciona igual sin activarlos.</p>
+            </div>
+            <div class="grid-2">
+              <section class="card" aria-labelledby="push-title">
+                <div class="card__header">
+                  <span class="card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                  </span>
+                  <div>
+                    <h3 id="push-title">Activar avisos</h3>
+                    <p class="card__subtitle">Te avisamos cuando un reporte cambie de estado.</p>
+                  </div>
+                </div>
+                <button class="button button--secondary" type="button" id="enable-push">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                  Activar avisos
+                </button>
+                <p class="status" id="push-status" role="status" aria-live="polite"></p>
+              </section>
+              <aside class="card" aria-labelledby="what-title">
+                <h3 id="what-title">¿Qué te avisaremos?</h3>
+                <ul class="tips" style="margin-top:12px">
+                  <li><strong>Cuando recibamos tu reporte.</strong></li>
+                  <li><strong>Cuando cambie a resuelto.</strong></li>
+                  <li><strong>Nunca</strong> para pedir datos personales.</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <!-- Ayuda -->
+          <section class="view" id="view-ayuda" data-view="ayuda" aria-labelledby="ayuda-title" hidden>
+            <div class="view__intro">
+              <p class="eyebrow">Ayuda</p>
+              <h2 id="ayuda-title" data-view-heading tabindex="-1">Preguntas frecuentes</h2>
+              <p>Respuestas cortas para usar CivicGuard con confianza.</p>
+            </div>
+            <div class="grid-2">
+              <section class="card" aria-labelledby="faq-title">
+                <h3 id="faq-title">Preguntas frecuentes</h3>
+                <div class="faq" style="margin-top:14px">
+                  <details>
+                    <summary>¿Necesito internet para reportar?</summary>
+                    <p>No. El reporte se guarda en tu dispositivo y se envía cuando vuelva la conexión.</p>
+                  </details>
+                  <details>
+                    <summary>¿Por qué pide la ubicación?</summary>
+                    <p>Porque el equipo necesita saber dónde está el problema. Si no das permiso, no podrás enviar el reporte.</p>
+                  </details>
+                  <details>
+                    <summary>¿Qué datos se guardan?</summary>
+                    <p>Solo lo que escribes y la ubicación del reporte. No pedimos datos personales.</p>
+                  </details>
+                  <details>
+                    <summary>¿Los avisos son obligatorios?</summary>
+                    <p>No. Puedes reportar sin activarlos y cambiar de opinión cuando quieras.</p>
+                  </details>
+                </div>
+              </section>
+              <aside class="card" aria-labelledby="privacy-title">
+                <h3 id="privacy-title">Privacidad y calma</h3>
+                <p class="card__subtitle" style="margin-top:8px">
+                  CivicGuard no muestra anuncios ni te pide permisos que no necesita.
+                  La información de tus reportes vive en este dispositivo hasta que se envía.
+                </p>
+                <button class="button button--secondary" type="button" data-view-target="reportar" style="margin-top:16px">
+                  Hacer un reporte
+                </button>
+              </aside>
+            </div>
+          </section>
+        </main>
+
+        <footer class="app-footer">
+          Tus datos se guardan en este dispositivo.
+        </footer>
+      </div>
+    </div>
 
     <nav class="bottom-nav" aria-label="Secciones principales">
       <div class="bottom-nav__inner">
-        <a class="bottom-nav__link" href="#section-report">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 20h9" />
-            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-          </svg>
+        <button class="bottom-nav__link" type="button" data-view-target="resumen" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" /></svg>
+          Inicio
+        </button>
+        <button class="bottom-nav__link" type="button" data-view-target="reportar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
           Reportar
-        </a>
-        <a class="bottom-nav__link" href="#section-push">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-          </svg>
-          Avisos
-        </a>
-        <a class="bottom-nav__link" href="#section-list">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M8 6h13M8 12h13M8 18h13" />
-            <path d="M3 6h.01M3 12h.01M3 18h.01" />
-          </svg>
+        </button>
+        <button class="bottom-nav__link" type="button" data-view-target="reportes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M3 6h.01M3 12h.01M3 18h.01" /></svg>
           Reportes
-        </a>
+        </button>
+        <button class="bottom-nav__link" type="button" data-view-target="avisos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+          Avisos
+        </button>
+        <button class="bottom-nav__link" type="button" data-view-target="ayuda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-.8.6-1.5 1.2-1.5 2.5" /><path d="M12 17h.01" /></svg>
+          Ayuda
+        </button>
       </div>
     </nav>
-
-    <footer class="app-footer">
-      <span id="pending-counter">0 reportes pendientes de sincronizar</span>
-      <br />
-      Tus datos se guardan en este dispositivo.
-    </footer>
 
     <script type="module" src="/src/app.js"></script>
   </body>

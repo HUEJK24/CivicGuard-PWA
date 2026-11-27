@@ -3,6 +3,7 @@ import { reportEnvironment } from './core/environment.js';
 import swRegistrationManager from './core/swRegistrationManager.js';
 import indexedDbManager from './db/indexedDbManager.js';
 import { mountShell, renderList, setApiStatus } from './ui/shellComponents.js';
+import { mountViewNavigation } from './ui/viewNavigation.js';
 import offlineBanner from './ui/offlineBanner.js';
 import { mountPushNotifications } from './notifications/pushNotifications.js';
 import {
@@ -25,6 +26,7 @@ async function bootstrap() {
 
   // El shell se monta antes de tocar IndexedDB: la UI aparece aunque la base
   // de datos tarde (o falle), y sigue funcionando sin conexión.
+  mountViewNavigation();
   mountShell(submitIncident);
   offlineBanner.mount();
 

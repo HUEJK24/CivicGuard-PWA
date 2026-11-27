@@ -153,6 +153,7 @@ function setElementStatus(id, message, tone = '') {
 
 export function setApiStatus(message, tone = '') {
   setElementStatus(API_STATUS_ID, message, tone);
+  setElementStatus('dash-status', message, tone);
 }
 
 function matchesFilter(incident, filter) {
@@ -198,11 +199,43 @@ export function renderList(incidents = []) {
   };
   setStat('stat-total', incidents.length);
   setStat('stat-pending', pending);
+  setStat('dash-total', incidents.length);
+  setStat('dash-synced', incidents.length - pending);
+  setStat('dash-pending', pending);
 
   const counter = document.getElementById(COUNTER_ID);
   if (counter) {
     counter.textContent = `${pending} ${pending === 1 ? 'reporte pendiente' : 'reportes pendientes'} de sincronizar`;
   }
+
+  renderRecent(incidents);
+}
+
+/** Vista resumen: los tres reportes más recientes, sin duplicar la lista. */
+export function renderRecent(incidents = []) {
+  const list = document.getElementById('recent-list');
+  if (!list) return;
+
+  const recent = incidents.slice(0, 3);
+  list.innerHTML = recent.length
+    ? recent
+        .map((incident) => {
+          const status = statusInfo(incident);
+          return `
+            <li class="recent__item">
+              <span class="recent__dot" data-state="${status.tone}" aria-hidden="true"></span>
+              <span class="recent__body">
+                <strong>${escapeHtml(incident.title)}</strong>
+                <span>${formatDate(incident.created_at)} · ${status.label}</span>
+              </span>
+            </li>
+          `;
+        })
+        .join('')
+    : `<li class="recent__empty">
+        Todavía no hay reportes.
+        <button type="button" data-view-target="reportar">Crear el primero</button>
+      </li>`;
 }
 
 /** Filtros táctiles con aria-pressed; no reenvían ni borran información. */
@@ -399,4 +432,4 @@ export function mountShell(onSubmit) {
   renderList();
 }
 
-export default { mountShell, mountFilters, renderForm, renderList, setApiStatus };
+export default { mountShell, mountFilters, renderForm, renderList, renderRecent, setApiStatus };
